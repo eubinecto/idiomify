@@ -1,7 +1,7 @@
-from typing import Tuple, List
+import csv
 import yaml
 import wandb
-import pandas as pd
+from typing import Tuple, List
 from idiomify.models import Alpha, Gamma
 from idiomify.paths import idiom2def_dir, CONFIG_YAML, idioms_dir
 
@@ -12,11 +12,13 @@ def fetch_idiom2def(ver: str) -> List[Tuple[str, str]]:
     artifact_path = idiom2def_dir(ver)
     artifact.download(root=str(artifact_path))
     tsv_path = artifact_path / "all.tsv"
-    df = pd.read_csv(str(tsv_path), delimiter="\t")
-    return [
-        (row[0], row[1])
-        for _, row in df.iterrows()
-    ]
+    with open(tsv_path, 'r') as fh:
+        reader = csv.reader(fh, delimiter="\t")
+        next(reader)
+        return [
+            (row[0], row[1])
+            for row in reader
+        ]
 
 
 def fetch_idioms(ver: str) -> List[str]:
@@ -24,11 +26,13 @@ def fetch_idioms(ver: str) -> List[str]:
     artifact_path = idioms_dir(ver)
     artifact.download(root=str(artifact_path))
     tsv_path = artifact_path / "all.tsv"
-    df = pd.read_csv(str(tsv_path), delimiter="\t")
-    return [
-        row[0]
-        for _, row in df.iterrows()
-    ]
+    with open(tsv_path, 'r') as fh:
+        reader = csv.reader(fh, delimiter="\t")
+        next(reader)
+        return [
+            (row[0])
+            for row in reader
+        ]
 
 
 # models
