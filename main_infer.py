@@ -2,7 +2,7 @@ import argparse
 from idiomify import tensors as T
 from idiomify.fetchers import fetch_config, fetch_rd, fetch_idioms
 from transformers import BertTokenizer
-
+from termcolor import colored
 
 def main():
         parser = argparse.ArgumentParser()
@@ -27,7 +27,7 @@ def main():
         ]
         # sort and append
         res = list(sorted(wisdom2prob, key=lambda x: x[1], reverse=True))
-        print(f"query: {config['sent']}")
+        print(f"query: {colored(text=config['sent'], color='blue')}")
         for idx, (idiom, prob) in enumerate(res):
             print(idx, idiom, prob)
 
