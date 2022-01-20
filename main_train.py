@@ -15,7 +15,6 @@ from idiomify import tensors as T
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("entity", type=str)
     parser.add_argument("--model", type=str, default="alpha")
     parser.add_argument("--ver", type=str, default="eng2eng")
     parser.add_argument("--num_workers", type=int, default=os.cpu_count())
@@ -32,18 +31,18 @@ def main():
     mlm = BertForMaskedLM.from_pretrained(config['bert'])
     tokenizer = BertTokenizer.from_pretrained(config['bert'])
     idioms = fetch_idioms(config['idioms_ver'])
-    wisdom2subwords = T.wisdom2subwords(idioms, tokenizer, config['k'])
+    idiom2subwords = T.idiom2subwords(idioms, tokenizer, config['k'])
     # choose the model to train
     if config['model'] == Alpha.name():
-        rd = Alpha(mlm, wisdom2subwords, config['k'], config['lr'])
+        rd = Alpha(mlm, idiom2subwords, config['k'], config['lr'])
     elif config['model'] == Gamma.name():
-        rd = Gamma(mlm, wisdom2subwords, config['k'], config['lr'])
+        rd = Gamma(mlm, idiom2subwords, config['k'], config['lr'])
     else:
         raise ValueError
     # prepare datamodule
     datamodule = IdiomifyDataModule(config, tokenizer, idioms)
 
-    with wandb.init(entity=config['entity'], project="idiomify_demo", config=config) as run:
+    with wandb.init(entity="eubinecto", project="idiomify-demo", config=config) as run:
         logger = WandbLogger(log_model=False)
         trainer = pl.Trainer(max_epochs=config['max_epochs'],
                              fast_dev_run=config['fast_dev_run'],

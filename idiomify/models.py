@@ -29,17 +29,17 @@ class RD(pl.LightningModule):
     def predict_dataloader(self):
         pass
 
-    def __init__(self, mlm: BertForMaskedLM, wisdom2subwords: torch.Tensor, k: int, lr: float):  # noqa
+    def __init__(self, mlm: BertForMaskedLM, idiom2subwords: torch.Tensor, k: int, lr: float):  # noqa
         """
         :param mlm: a bert model for masked language modeling
-        :param wisdom2subwords: (|W|, K)
+        :param idiom2subwords: (|W|, K)
         :return: (N, K, |V|); (num samples, k, the size of the vocabulary of subwords)
         """
         super().__init__()
         # -- hyper params --- #
         # should be saved to self.hparams
         # https://github.com/PyTorchLightning/pytorch-lightning/issues/4390#issue-730493746
-        self.save_hyperparameters(ignore=["mlm", "wisdom2subwords"])
+        self.save_hyperparameters(ignore=["mlm", "idiom2subwords"])
         # -- the only neural network we need -- #
         self.mlm = mlm
         # --- to be used for getting H_k --- #
@@ -47,7 +47,7 @@ class RD(pl.LightningModule):
         # --- to be used for getting H_desc --- #
         self.desc_mask: Optional[torch.Tensor] = None  # (N, L)
         # -- constant tensors -- #
-        self.register_buffer("wisdom2subwords", wisdom2subwords)  # (|W|, K)
+        self.register_buffer("idiom2subwords", idiom2subwords)  # (|W|, K)
 
     def forward(self, X: torch.Tensor) -> torch.Tensor:
         """
@@ -94,7 +94,7 @@ class RD(pl.LightningModule):
         :return: S_wisdom_literal (N, |W|)
         """
         S_vocab = self.mlm.cls(H_k)  # bmm; (N, K, H) * (H, |V|) ->  (N, K, |V|)
-        indices = self.wisdom2subwords.T.repeat(S_vocab.shape[0], 1, 1)  # (|W|, K) -> (N, K, |W|)
+        indices = self.idiom2subwords.T.repeat(S_vocab.shape[0], 1, 1)  # (|W|, K) -> (N, K, |W|)
         S_wisdom_literal = S_vocab.gather(dim=-1, index=indices)  # (N, K, |V|) -> (N, K, |W|)
         S_wisdom_literal = S_wisdom_literal.sum(dim=1)  # (N, K, |W|) -> (N, |W|)
         return S_wisdom_literal
@@ -194,9 +194,9 @@ class Gamma(RD):
     but the way we get S_wisdom_figurative is much simplified, compared with RDBeta.
     """
 
-    def __init__(self, mlm: BertForMaskedLM, wisdom2subwords: torch.Tensor, k: int, lr: float):
-        super().__init__(mlm, wisdom2subwords, k, lr)
-        # a pooler is a multilayer perceptron that pools wisdom_embeddings from wisdom2subwords_embeddings
+    def __init__(self, mlm: BertForMaskedLM, idiom2subwords: torch.Tensor, k: int, lr: float):
+        super().__init__(mlm, idiom2subwords, k, lr)
+        # a pooler is a multilayer perceptron that pools wisdom_embeddings from idiom2subwords_embeddings
         self.pooler = BiLSTMPooler(self.mlm.config.hidden_size)
         # --- to be used to compute  attentions --- #
         self.attention_mask: Optional[torch.Tensor] = None
@@ -232,11 +232,11 @@ class Gamma(RD):
         return S_wisdom, S_wisdom_literal, S_wisdom_figurative
 
     def S_wisdom_figurative(self, H_all: torch.Tensor) -> torch.Tensor:
-        # --- draw the embeddings for wisdoms from  the embeddings of wisdom2subwords -- #
+        # --- draw the embeddings for wisdoms from  the embeddings of idiom2subwords -- #
         # this is to use as less of newly initialised weights as possible
-        wisdom2subwords_embeddings = self.mlm.bert \
-            .embeddings.word_embeddings(self.wisdom2subwords)  # (W, K)  -> (W, K, H)
-        wisdom_embeddings = self.pooler(wisdom2subwords_embeddings).squeeze()  # (W, H, K) -> (W, H, 1) -> (W, H)
+        idiom2subwords_embeddings = self.mlm.bert \
+            .embeddings.word_embeddings(self.idiom2subwords)  # (W, K)  -> (W, K, H)
+        wisdom_embeddings = self.pooler(idiom2subwords_embeddings).squeeze()  # (W, H, K) -> (W, H, 1) -> (W, H)
         # --- draw H_wisdom from H_desc with attention --- #
         H_cls = H_all[:, 0]  # (N, L, H) -> (N, H)
         H_desc = self.H_desc(H_all)  # (N, L, H) -> (N, D, H)

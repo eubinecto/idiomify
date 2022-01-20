@@ -7,7 +7,7 @@ from typing import List
 from transformers import BertTokenizer
 
 
-def wisdom2subwords(idioms: List[str], tokenizer: BertTokenizer, k: int) -> torch.Tensor:
+def idiom2subwords(idioms: List[str], tokenizer: BertTokenizer, k: int) -> torch.Tensor:
     mask_id = tokenizer.mask_token_id
     pad_id = tokenizer.pad_token_id
     # temporarily disable single-token status of the wisdoms

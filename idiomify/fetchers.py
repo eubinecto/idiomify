@@ -2,8 +2,10 @@ import csv
 import yaml
 import wandb
 from typing import Tuple, List
-from idiomify.models import Alpha, Gamma
-from idiomify.paths import idiom2def_dir, CONFIG_YAML, idioms_dir
+from transformers import AutoModelForMaskedLM, AutoConfig, BertTokenizer
+from idiomify.models import Alpha, Gamma, RD
+from idiomify.paths import idiom2def_dir, CONFIG_YAML, idioms_dir, alpha_dir
+from idiomify import tensors as T
 
 
 # dataset
@@ -35,13 +37,23 @@ def fetch_idioms(ver: str) -> List[str]:
         ]
 
 
-# models
-def fetch_alpha(ver: str) -> Alpha:
-    pass
-
-
-def fetch_gamma(ver: str) -> Gamma:
-    pass
+def fetch_rd(model: str, ver: str) -> RD:
+    artifact = wandb.Api().artifact(f"eubinecto/idiomify-demo/{model}:{ver}", type="model")
+    config = artifact.metadata
+    artifact_path = alpha_dir(ver)
+    artifact.download(root=str(artifact_path))
+    mlm = AutoModelForMaskedLM.from_config(AutoConfig.from_pretrained(config['bert']))
+    ckpt_path = artifact_path / "rd.ckpt"
+    idioms = fetch_idioms(config['idioms_ver'])
+    tokenizer = BertTokenizer.from_pretrained(config['bert'])
+    idiom2subwords = T.idiom2subwords(idioms, tokenizer, config['k'])
+    if model == Alpha.name():
+        rd = Alpha.load_from_checkpoint(str(ckpt_path), mlm=mlm, idiom2subwords=idiom2subwords)
+    elif model == Gamma.name():
+        rd = Gamma.load_from_checkpoint(str(ckpt_path), mlm=mlm, idiom2subwords=idiom2subwords)
+    else:
+        raise ValueError
+    return rd
 
 
 def fetch_config() -> dict:
