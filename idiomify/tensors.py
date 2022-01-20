@@ -3,18 +3,18 @@ all the functions for building tensors are defined here.
 builders must accept device as one of the parameters.
 """
 import torch
-from typing import List
+from typing import List, Tuple
 from transformers import BertTokenizer
 
 
 def idiom2subwords(idioms: List[str], tokenizer: BertTokenizer, k: int) -> torch.Tensor:
     mask_id = tokenizer.mask_token_id
     pad_id = tokenizer.pad_token_id
-    # temporarily disable single-token status of the wisdoms
-    wisdoms = [idiom.split(" ") for idiom in idioms]
-    encodings = tokenizer(text=wisdoms,
+    # temporarily disable single-token status of the idioms
+    idioms = [idiom.split(" ") for idiom in idioms]
+    encodings = tokenizer(text=idioms,
                           add_special_tokens=False,
-                          # should set this to True, as we already have the wisdoms split.
+                          # should set this to True, as we already have the idioms split.
                           is_split_into_words=True,
                           padding='max_length',
                           max_length=k,  # set to k
@@ -24,10 +24,11 @@ def idiom2subwords(idioms: List[str], tokenizer: BertTokenizer, k: int) -> torch
     return input_ids
 
 
-def inputs(definitions: List[str], tokenizer: BertTokenizer, k: int) -> torch.Tensor:
-    lefts = [" ".join(["[MASK]"] * k)] * len(definitions)
+def inputs(idiom2def: List[Tuple[str, str]], tokenizer: BertTokenizer, k: int) -> torch.Tensor:
+    defs = [definition for _, definition in idiom2def]
+    lefts = [" ".join(["[MASK]"] * k)] * len(defs)
     encodings = tokenizer(text=lefts,
-                          text_pair=definitions,
+                          text_pair=defs,
                           return_tensors="pt",
                           add_special_tokens=True,
                           truncation=True,
@@ -47,9 +48,9 @@ def inputs(definitions: List[str], tokenizer: BertTokenizer, k: int) -> torch.Te
                         desc_mask], dim=1)
 
 
-def targets(idioms: List[str]) -> torch.Tensor:
+def targets(idiom2def: List[Tuple[str, str]], idioms: List[str]) -> torch.Tensor:
     return torch.LongTensor([
         idioms.index(idiom)
-        for idiom in idioms
+        for idiom, _ in idiom2def
     ])
 

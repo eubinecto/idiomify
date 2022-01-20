@@ -2,10 +2,10 @@ import csv
 import yaml
 import wandb
 from typing import Tuple, List
-from transformers import AutoModelForMaskedLM, AutoConfig, BertTokenizer
 from idiomify.models import Alpha, Gamma, RD
 from idiomify.paths import idiom2def_dir, CONFIG_YAML, idioms_dir, alpha_dir
 from idiomify import tensors as T
+from transformers import AutoModelForMaskedLM, AutoConfig, BertTokenizer
 
 
 # dataset
@@ -16,7 +16,6 @@ def fetch_idiom2def(ver: str) -> List[Tuple[str, str]]:
     tsv_path = artifact_path / "all.tsv"
     with open(tsv_path, 'r') as fh:
         reader = csv.reader(fh, delimiter="\t")
-        next(reader)
         return [
             (row[0], row[1])
             for row in reader
@@ -32,7 +31,7 @@ def fetch_idioms(ver: str) -> List[str]:
         reader = csv.reader(fh, delimiter="\t")
         next(reader)
         return [
-            (row[0])
+            row[0]
             for row in reader
         ]
 

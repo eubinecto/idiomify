@@ -3,9 +3,9 @@ The reverse dictionary models below are based off of: https://github.com/yhcc/Be
 """
 from typing import Tuple, List, Optional
 import torch
-import pytorch_lightning as pl
-from transformers.models.bert.modeling_bert import BertForMaskedLM
 from torch.nn import functional as F
+import pytorch_lightning as pl
+from transformers import BertForMaskedLM
 
 
 class RD(pl.LightningModule):
@@ -135,7 +135,7 @@ class RD(pl.LightningModule):
 
     def training_epoch_end(self, outputs: List[dict]) -> None:
         # to see an average performance over the batches in this specific epoch
-        avg_loss = torch.stack([output['loss'] for output in outputs]).mean()
+        avg_loss = torch.stack([output['loss'].detach() for output in outputs]).mean()
         self.log("Train/Average Loss", avg_loss)
 
     def validation_step(self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> dict:
@@ -146,7 +146,7 @@ class RD(pl.LightningModule):
 
     def validation_epoch_end(self, outputs: List[dict]) -> None:
         # to see an average performance over the batches in this specific epoch
-        avg_loss = torch.stack([output['loss'] for output in outputs]).mean()
+        avg_loss = torch.stack([output['loss'].detach() for output in outputs]).mean()
         self.log("Validation/Average Loss", avg_loss)
 
     def configure_optimizers(self) -> torch.optim.Optimizer:

@@ -2,9 +2,9 @@ import torch
 from typing import Tuple, Optional, List
 from torch.utils.data import Dataset, DataLoader
 from pytorch_lightning import LightningDataModule
-from transformers import BertTokenizer
 from idiomify.fetchers import fetch_idiom2def
 from idiomify import tensors as T
+from transformers import BertTokenizer
 
 
 class IdiomifyDataset(Dataset):
@@ -66,8 +66,8 @@ class IdiomifyDataModule(LightningDataModule):
         """
         # --- set up the builders --- #
         # build the datasets
-        X = T.inputs([definition for _, definition in self.idiom2def], self.tokenizer, self.config['k'])
-        y = T.targets(self.idioms)
+        X = T.inputs(self.idiom2def, self.tokenizer, self.config['k'])
+        y = T.targets(self.idiom2def, self.idioms)
         self.dataset = IdiomifyDataset(X, y)
 
     def train_dataloader(self) -> DataLoader:

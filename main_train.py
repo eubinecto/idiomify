@@ -49,6 +49,7 @@ def main():
                              log_every_n_steps=config['log_every_n_steps'],
                              gpus=torch.cuda.device_count(),
                              default_root_dir=str(ROOT_DIR),
+                             enable_checkpointing=False,
                              logger=logger)
         # start training
         trainer.fit(model=rd, datamodule=datamodule)
