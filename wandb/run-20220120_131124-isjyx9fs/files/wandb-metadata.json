@@ -1,0 +1,31 @@
+{
+    "os": "macOS-12.1-arm64-arm-64bit",
+    "python": "3.9.9",
+    "heartbeatAt": "2022-01-20T04:11:25.393449",
+    "startedAt": "2022-01-20T04:11:24.663767",
+    "docker": null,
+    "cpu_count": 8,
+    "cuda": null,
+    "args": [
+        "artifact",
+        "put",
+        "artifacts/wisdom2def_d.tsv",
+        "-n",
+        "wisdom2def",
+        "-t",
+        "dataset",
+        "-a",
+        "d"
+    ],
+    "state": "running",
+    "program": "/opt/homebrew/Caskroom/miniforge/base/envs/idiomify-demo/bin/wandb",
+    "git": {
+        "remote": "https://github.com/eubinecto/idiomify-demo.git",
+        "commit": "db5933850fd03c3e44c527c7aa110880a26d8499"
+    },
+    "email": "eubinecto",
+    "root": "/Users/eubinecto/Desktop/Projects/Toy/idiomify-demo",
+    "host": "Eu-Bins-MacBook-Air.local",
+    "username": "eubinecto",
+    "executable": "/opt/homebrew/Caskroom/miniforge/base/envs/idiomify-demo/bin/python3.9"
+}
