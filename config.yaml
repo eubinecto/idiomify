@@ -30,7 +30,7 @@ gamma:
     idiom2def_ver: c
     k: 11
     lr: 0.00001
-    max_epochs: 10
+    max_epochs: 50
     batch_size: 64
     shuffle: true
   kor2eng:
@@ -40,7 +40,7 @@ gamma:
     idiom2def_ver: d
     k: 11
     lr: 0.00001
-    max_epochs: 20
+    max_epochs: 50
     batch_size: 64
     num_workers: 4
     shuffle: true
