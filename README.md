@@ -1,5 +1,5 @@
 # idiomify
-A human-inspired Idiomifier (Disseration for my Msc degree in Applied Linguistics & Second Language Acquisition)
+A human-inspired Idiomifier.
 
 # Proposal: Killing two birds with a human-inspired Idiomifier
 
