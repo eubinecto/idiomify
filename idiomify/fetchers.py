@@ -1,11 +1,45 @@
 import csv
 import yaml
 import wandb
+import requests
 from typing import Tuple, List
-from idiomify.models import Alpha, Gamma, RD
+
+from wandb.sdk.wandb_run import Run
+
+from idiomify.models import Alpha, RD
 from idiomify.paths import idiom2def_dir, CONFIG_YAML, idioms_dir, alpha_dir
-from idiomify import tensors as T
+from idiomify.urls import (
+    EPIE_IMMUTABLE_IDIOMS_URL,
+    EPIE_IMMUTABLE_IDIOMS_CONTEXTS_URL,
+    EPIE_IMMUTABLE_IDIOMS_TAGS_URL,
+    EPIE_MUTABLE_IDIOMS_URL,
+    EPIE_MUTABLE_IDIOMS_CONTEXTS_URL,
+    EPIE_MUTABLE_IDIOMS_TAGS_URL
+)
+from idiomify.builders import Idiom2SubwordsBuilder
 from transformers import AutoModelForMaskedLM, AutoConfig, BertTokenizer
+
+
+# sources for dataset
+def fetch_epie() -> List[Tuple[str, str, str]]:
+    idioms = requests.get(EPIE_IMMUTABLE_IDIOMS_URL).text \
+             + requests.get(EPIE_MUTABLE_IDIOMS_URL).text
+    contexts = requests.get(EPIE_IMMUTABLE_IDIOMS_CONTEXTS_URL).text \
+               + requests.get(EPIE_MUTABLE_IDIOMS_CONTEXTS_URL).text
+    tags = requests.get(EPIE_IMMUTABLE_IDIOMS_TAGS_URL).text \
+           + requests.get(EPIE_MUTABLE_IDIOMS_TAGS_URL).text
+    return list(zip(idioms.strip().split("\n"),
+                    contexts.strip().split("\n"),
+                    tags.strip().split("\n")))
+
+
+# you should somehow get this from... wandb.
+def fetch_idiom2context(ver: str, run: Run = None) -> List[Tuple[str, str]]:
+    """
+    include run if you want to track the lineage
+    """
+    if run:
+        pass
 
 
 # dataset
@@ -45,7 +79,7 @@ def fetch_rd(model: str, ver: str) -> RD:
     ckpt_path = artifact_path / "rd.ckpt"
     idioms = fetch_idioms(config['idioms_ver'])
     tokenizer = BertTokenizer.from_pretrained(config['bert'])
-    idiom2subwords = T.idiom2subwords(idioms, tokenizer, config['k'])
+    idiom2subwords = Idiom2SubwordsBuilder(tokenizer)(idioms, config['k'])
     if model == Alpha.name():
         rd = Alpha.load_from_checkpoint(str(ckpt_path), mlm=mlm, idiom2subwords=idiom2subwords)
     elif model == Gamma.name():

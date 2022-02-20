@@ -2,8 +2,8 @@ import torch
 from typing import Tuple, Optional, List
 from torch.utils.data import Dataset, DataLoader
 from pytorch_lightning import LightningDataModule
-from idiomify.fetchers import fetch_idiom2def
-from idiomify import tensors as T
+from idiomify.fetchers import fetch_idiom2def, fetch_epie
+from idiomify.builders import Idiom2DefBuilder, Idiom2ContextBuilder, TargetsBuilder
 from transformers import BertTokenizer
 
 
@@ -30,7 +30,7 @@ class IdiomifyDataset(Dataset):
         return self.X[idx], self.y[idx]
 
 
-class IdiomifyDataModule(LightningDataModule):
+class Idiom2DefDataModule(LightningDataModule):
 
     # boilerplate - just ignore these
     def test_dataloader(self):
@@ -66,10 +66,50 @@ class IdiomifyDataModule(LightningDataModule):
         """
         # --- set up the builders --- #
         # build the datasets
-        X = T.inputs(self.idiom2def, self.tokenizer, self.config['k'])
-        y = T.targets(self.idiom2def, self.idioms)
+        X = Idiom2DefBuilder(self.tokenizer)(self.idiom2def, self.config['k'])
+        y = TargetsBuilder(self.tokenizer)(self.idiom2def, self.idioms)
         self.dataset = IdiomifyDataset(X, y)
 
     def train_dataloader(self) -> DataLoader:
+        return DataLoader(self.dataset, batch_size=self.config['batch_size'],
+                          shuffle=self.config['shuffle'], num_workers=self.config['num_workers'])
+
+
+class Idiom2ContextsDataModule(LightningDataModule):
+
+    # boilerplate - just ignore these
+    def test_dataloader(self):
+        pass
+
+    def val_dataloader(self):
+        pass
+
+    def predict_dataloader(self):
+        pass
+
+    def __init__(self, config: dict, tokenizer: BertTokenizer, idioms: List[str]):
+        super().__init__()
+        self.config = config
+        self.tokenizer = tokenizer
+        self.idioms = idioms
+        self.idiom2context: Optional[List[Tuple[str, str]]] = None
+        self.dataset: Optional[IdiomifyDataset] = None
+
+    def prepare_data(self):
+        """
+        prepare: download all data needed for this from wandb to local.
+        """
+        self.idiom2context = [
+            (idiom, context)
+            for idiom, _, context in fetch_epie()
+        ]
+
+    def setup(self, stage: Optional[str] = None):
+        # build the datasets
+        X = Idiom2ContextBuilder(self.tokenizer)(self.idiom2context)
+        y = TargetsBuilder(self.tokenizer)(self.idiom2context, self.idioms)
+        self.dataset = IdiomifyDataset(X, y)
+
+    def train_dataloader(self):
         return DataLoader(self.dataset, batch_size=self.config['batch_size'],
                           shuffle=self.config['shuffle'], num_workers=self.config['num_workers'])
