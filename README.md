@@ -30,8 +30,6 @@ I have the following two research questions:
 <img width="581" alt="image" src="https://user-images.githubusercontent.com/56193069/154847506-88c4283d-8a35-4c53-81c1-83c193ecf739.png">
 
 
-## But why? what is your rationale?
-
 In short, the reason I have the two questions is to **kill two birds with one stone,** where the two birds are ***suggesting better biases***  and ***suggesting novel predictions***, and the stone is  ***designing a human-inspired Idiomifier**.* 
 
 ### What do you mean by the first bird, *suggest better biases*? (SLA → NLP)
@@ -70,21 +68,13 @@ Hence, I believe it is sensible to ask the first question:
 1. (SLA → NLP) If we have both of the models **decreamentally infer** the figurative meaning of idioms from their constituents, will this lead to an increased performance in the Eng2Eng Idiomify task? If so, what would be the mathematical interpretation of such human-inspired success? 
 
 ### What do you mean by the second bird, *suggest novel predictions?  (NLP → SLA)*
-
-<img width="767" alt="image" src="https://user-images.githubusercontent.com/56193069/154848983-5dd69f34-0470-44ef-9e46-57dde8473306.png">
-
-
-
-(and also, something like Maeura’s work on finding emergent properties from simulation):
-
-![Uploading image.png…]()
+(work in progress)
 
 
 1. (NLP → SLA) What differences can we observe from L1 & L2 Idiomifiers in how they learn idioms? From this, **can we draw any novel predictons on how L1 & L2 learners learn idioms?**    
 
 
-    
-- what should be the title (for Feburary Workshop)
-    - Catching two birds with one stone: an attempt to catch Applied Linguistics and Natural Language Processing by desigining a human-inspired Idiomifier
-- your resume?
+
 ## Mischelleanous
+![KakaoTalk_Photo_2022-02-15-21-02-40](https://user-images.githubusercontent.com/56193069/154849076-0131f445-0131-49aa-bd77-6687adb94f5e.png)
+
