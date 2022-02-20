@@ -75,6 +75,6 @@ Hence, I believe it is sensible to ask the first question:
 
 
 
-## Mischelleanous
+## Miscellaneous
 ![KakaoTalk_Photo_2022-02-15-21-02-40](https://user-images.githubusercontent.com/56193069/154849076-0131f445-0131-49aa-bd77-6687adb94f5e.png)
 
