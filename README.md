@@ -8,7 +8,7 @@ keywords: idiomify, idioms, inductive biases, novel predictions
 
 ## What are your research questions?
 
-Given the follwing two [](https://huggingface.co/bert-base-uncased)connectionsist models (two versions of a language model called BERT):
+Given the following two [](https://huggingface.co/bert-base-uncased)connectionsist models (two versions of a language model called BERT):
 
 | models | what task has it learned already? | what new task will they be taught? |
 | --- | --- | --- |
