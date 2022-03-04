@@ -1,46 +1,8 @@
 alpha:
-  eng2eng:
-    bert: bert-base-uncased
-    desc:
-    seed: 410
-    idioms_ver: c
-    idiom2def_ver: c
-    k: 11
-    lr: 0.00001
-    max_epochs: 10
-    batch_size: 64
-    shuffle: true
-  kor2eng:
-    bert: bert-base-multilingual-uncased
-    desc:
-    seed: 410
-    idioms_ver: c
-    idiom2def_ver: d
-    k: 11
-    lr: 0.00001
-    max_epochs: 20
-    batch_size: 64
-    num_workers: 4
-    shuffle: true
-gamma:
-  eng2eng:
-    bert: bert-base-uncased
-    seed: 410
-    idioms_ver: c
-    idiom2def_ver: c
-    k: 11
-    lr: 0.00001
-    max_epochs: 50
-    batch_size: 64
-    shuffle: true
-  kor2eng:
-    bert: bert-base-multilingual-uncased
-    seed: 410
-    idioms_ver: c
-    idiom2def_ver: d
-    k: 11
-    lr: 0.00001
-    max_epochs: 50
-    batch_size: 64
-    num_workers: 4
+  overfit:
+    bart: facebook/bart-base
+    lr: 0.0001
+    literal2idiomatic_ver: pie_v0
+    max_epochs: 100
+    batch_size: 100
     shuffle: true

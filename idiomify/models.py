@@ -1,56 +1,56 @@
 """
 The reverse dictionary models below are based off of: https://github.com/yhcc/BertForRD/blob/master/mono/model/bert.py
 """
-from typing import Tuple, List, Optional
+from typing import Tuple
 import torch
 from torch.nn import functional as F
 import pytorch_lightning as pl
-from transformers import BertForMaskedLM
+from transformers import BartForConditionalGeneration
 
 
-class Idiomifier(pl.LightningModule):
+class Alpha(pl.LightningModule):  # noqa
     """
-    @eubinecto
-    The superclass of all the reverse-dictionaries. This class houses any methods that are required by
-    whatever reverse-dictionaries we define.
+    the baseline.
     """
-    # passing them to avoid warnings ---  #
-    def train_dataloader(self):
-        pass
+    def __init__(self, bart: BartForConditionalGeneration, lr: float, bos_token_id: int, pad_token_id: int):  # noqa
+        super().__init__()
+        self.bart = bart
+        self.save_hyperparameters(ignore=["bart"])
 
-    def test_dataloader(self):
-        pass
-
-    def val_dataloader(self):
-        pass
-
-    def predict_dataloader(self):
-        pass
-
-    def __init__(self, mlm: BertForMaskedLM, idiom2subwords: torch.Tensor, k: int, lr: float):  # noqa
+    def forward(self, srcs: torch.Tensor, tgts_r: torch.Tensor) -> torch.Tensor:
         """
-        :param mlm: a bert model for masked language modeling
-        :param idiom2subwords: (|W|, K)
-        :return: (N, K, |V|); (num samples, k, the size of the vocabulary of subwords)
+        as for using bart for CG, refer to:
+        https://huggingface.co/docs/transformers/model_doc/bart#transformers.BartForQuestionAnswering.forward
+        param srcs: (N, 2, L_s)
+        param tgts_r: (N, 2, L_t)
+        return: (N, L, |V|)
         """
-        pass
+        input_ids, attention_mask = srcs[:, 0], srcs[:, 1]
+        decoder_input_ids, decoder_attention_mask = tgts_r[:, 0], tgts_r[:, 1]
+        outputs = self.bart(input_ids=input_ids,
+                            attention_mask=attention_mask,
+                            decoder_input_ids=decoder_input_ids,
+                            decoder_attention_mask=decoder_attention_mask)
+        logits = outputs[0]  # (N, L, |V|)
+        return logits
 
-    def forward(self, X: torch.Tensor) -> torch.Tensor:
-        """
-        given a batch, forward returns a batch of hidden vectors
-        :param X: (N, 3, L). input_ids, token_type_ids, and what was the last one...?
-        :return: (N, L, H)
-        """
-        pass
+    def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor, torch.Tensor]) -> dict:
+        srcs, tgts_r, tgts = batch  # (N, 2, L_s), (N, 2, L_t), (N, 2, L_t)
+        logits = self.forward(srcs, tgts_r)  # -> (N, L, |V|)
+        logits = logits.transpose(1, 2)  # (N, L, |V|) -> (N, |V|, L)
+        loss = F.cross_entropy(logits, tgts, ignore_index=self.hparams['pad_token_id'])\
+                .sum()  # (N, L, |V|), (N, L) -> (N,) -> (1,)
+        return {
+            "loss": loss
+        }
 
-    def step(self):
-        pass
-
-    def predict(self):
-        pass
-
-    def training_step(self):
-        pass
+    def predict(self, srcs: torch.Tensor) -> torch.Tensor:
+        pred_ids = self.bart.generate(
+            inputs=srcs[:, 0],  # (N, 2, L) -> (N, L)
+            attention_mask=srcs[:, 1],  # (N, 2, L) -> (N, L)
+            decoder_start_token_id=self.hparams['bos_token_id'],
+        )
+        return pred_ids  # (N, L)
 
     def configure_optimizers(self) -> torch.optim.Optimizer:
         """
@@ -59,21 +59,3 @@ class Idiomifier(pl.LightningModule):
         """
         # The authors used Adam, so we might as well use it as well.
         return torch.optim.AdamW(self.parameters(), lr=self.hparams['lr'])
-
-    @classmethod
-    def name(cls) -> str:
-        return cls.__name__.lower()
-
-
-class Alpha(Idiomifier):
-    """
-    @eubinecto
-    The first prototype.
-    S_wisdom = S_wisdom_literal
-    trained on: wisdom2def only.
-    """
-
-    def S_wisdom(self, H_all: torch.Tensor) -> torch.Tensor:
-        H_k = self.H_k(H_all)  # (N, L, H) -> (N, K, H)
-        S_wisdom = self.S_wisdom_literal(H_k)  # (N, K, H) -> (N, |W|)
-        return S_wisdom

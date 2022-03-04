@@ -62,7 +62,7 @@ def fetch_idioms(ver: str, run: Run = None) -> List[str]:
     # if run object is given, we track the lineage of the data.
     # if not, we get the dataset via wandb Api.
     if run:
-        artifact = run.use_artifact("idioms", type="dataset", aliases=ver)
+        artifact = run.use_artifact(f"idioms:{ver}", type="dataset")
     else:
         artifact = wandb.Api().artifact(f"eubinecto/idiomify/idioms:{ver}", type="dataset")
     artifact_dir = artifact.download(root=idioms_dir(ver))
@@ -75,7 +75,7 @@ def fetch_literal2idiomatic(ver: str, run: Run = None) -> List[Tuple[str, str]]:
     # if run object is given, we track the lineage of the data.
     # if not, we get the dataset via wandb Api.
     if run:
-        artifact = run.use_artifact("literal2idiom", type="dataset", aliases=ver)
+        artifact = run.use_artifact(f"literal2idiomatic:{ver}", type="dataset")
     else:
         artifact = wandb.Api().artifact(f"eubinecto/idiomify/literal2idiomatic:{ver}", type="dataset")
     artifact_dir = artifact.download(root=literal2idiomatic(ver))

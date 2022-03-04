@@ -3,20 +3,19 @@ import torch.cuda
 import wandb
 import argparse
 import pytorch_lightning as pl
-from pytorch_lightning.loggers import WandbLogger
 from termcolor import colored
-from transformers import BertForMaskedLM, BertTokenizer
-from idiomify.datamodules import IdiomifyDataModule
-from idiomify.fetchers import fetch_config, fetch_idioms
-from idiomify.models import Alpha, Gamma
+from pytorch_lightning.loggers import WandbLogger
+from transformers import BartTokenizer, BartForConditionalGeneration
+from idiomify.data import IdiomifyDataModule
+from idiomify.fetchers import fetch_config
+from idiomify.models import Alpha
 from idiomify.paths import ROOT_DIR
-from idiomify import tensors as T
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default="alpha")
-    parser.add_argument("--ver", type=str, default="eng2eng")
+    parser.add_argument("--ver", type=str, default="overfit ")
     parser.add_argument("--num_workers", type=int, default=os.cpu_count())
     parser.add_argument("--log_every_n_steps", type=int, default=1)
     parser.add_argument("--fast_dev_run", action="store_true", default=False)
@@ -27,22 +26,17 @@ def main():
     if not config['upload']:
         print(colored("WARNING: YOU CHOSE NOT TO UPLOAD. NOTHING BUT LOGS WILL BE SAVED TO WANDB", color="red"))
 
-    # prepare arguments
-    mlm = BertForMaskedLM.from_pretrained(config['bert'])
-    tokenizer = BertTokenizer.from_pretrained(config['bert'])
-    idioms = fetch_idioms(config['idioms_ver'])
-    idiom2subwords = T.idiom2subwords(idioms, tokenizer, config['k'])
-    # choose the model to train
-    if config['model'] == Alpha.name():
-        rd = Alpha(mlm, idiom2subwords, config['k'], config['lr'])
-    elif config['model'] == Gamma.name():
-        rd = Gamma(mlm, idiom2subwords, config['k'], config['lr'])
+    # prepare the model
+    bart = BartForConditionalGeneration.from_pretrained(config['bart'])
+    tokenizer = BartTokenizer.from_pretrained(config['bart'])
+    if config['model'] == "alpha":
+        model = Alpha(bart, config['lr'], tokenizer.bos_token_id, tokenizer.pad_token_id)
     else:
-        raise ValueError
-    # prepare datamodule
-    datamodule = IdiomifyDataModule(config, tokenizer, idioms)
+        raise NotImplementedError
+    # prepare the datamodule
 
-    with wandb.init(entity="eubinecto", project="idiomify-demo", config=config) as run:
+    with wandb.init(entity="eubinecto", project="idiomify", config=config) as run:
+        datamodule = IdiomifyDataModule(config, tokenizer, run)
         logger = WandbLogger(log_model=False)
         trainer = pl.Trainer(max_epochs=config['max_epochs'],
                              fast_dev_run=config['fast_dev_run'],
@@ -52,10 +46,10 @@ def main():
                              enable_checkpointing=False,
                              logger=logger)
         # start training
-        trainer.fit(model=rd, datamodule=datamodule)
+        trainer.fit(model=model, datamodule=datamodule)
         # upload the model to wandb only if the training is properly done  #
         if not config['fast_dev_run'] and trainer.current_epoch == config['max_epochs'] - 1:
-            ckpt_path = ROOT_DIR / "rd.ckpt"
+            ckpt_path = ROOT_DIR / "model.ckpt"
             trainer.save_checkpoint(str(ckpt_path))
             artifact = wandb.Artifact(name=config['model'], type="model", metadata=config)
             artifact.add_file(str(ckpt_path))

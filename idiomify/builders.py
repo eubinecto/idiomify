@@ -81,8 +81,7 @@ class TargetsBuilder(TensorBuilder):
             idiomatic + self.tokenizer.eos_token  # no bos, but ends with eos
             for _, idiomatic in literal2idiomatic
         ], return_tensors="pt", add_special_tokens=False, padding=True, truncation=True)
-        tgts = torch.stack([encodings['input_ids'],
-                            encodings['attention_mask']], dim=1)  # (N, 2, L)
-        return tgts
+        tgts = encodings['input_ids']
+        return tgts  # (N, L)
 
 

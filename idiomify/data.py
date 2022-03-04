@@ -2,6 +2,8 @@ import torch
 from typing import Tuple, Optional, List
 from torch.utils.data import Dataset, DataLoader
 from pytorch_lightning import LightningDataModule
+from wandb.sdk.wandb_run import Run
+
 from idiomify.fetchers import fetch_literal2idiomatic
 from idiomify.builders import SourcesBuilder, TargetsBuilder, TargetsRightShiftedBuilder
 from transformers import BartTokenizer
@@ -12,9 +14,9 @@ class IdiomifyDataset(Dataset):
                  srcs: torch.Tensor,
                  tgts_r: torch.Tensor,
                  tgts: torch.Tensor):
-        self.srcs = srcs
-        self.tgts_r = tgts_r
-        self.tgts = tgts
+        self.srcs = srcs  # (N, 2, L)
+        self.tgts_r = tgts_r  # (N, 2, L)
+        self.tgts = tgts  # (N, L)
 
     def __len__(self) -> int:
         """
@@ -47,10 +49,12 @@ class IdiomifyDataModule(LightningDataModule):
 
     def __init__(self,
                  config: dict,
-                 tokenizer: BartTokenizer):
+                 tokenizer: BartTokenizer,
+                 run: Run = None):
         super().__init__()
         self.config = config
         self.tokenizer = tokenizer
+        self.run = run
         # --- to be downloaded & built --- #
         self.literal2idiomatic: Optional[List[Tuple[str, str]]] = None
         self.dataset: Optional[IdiomifyDataset] = None
@@ -59,12 +63,9 @@ class IdiomifyDataModule(LightningDataModule):
         """
         prepare: download all data needed for this from wandb to local.
         """
-        self.literal2idiomatic = fetch_literal2idiomatic(self.config['literal2idiomatic_ver'])
+        self.literal2idiomatic = fetch_literal2idiomatic(self.config['literal2idiomatic_ver'], self.run)
 
     def setup(self, stage: Optional[str] = None):
-        """
-        setup the builders.
-        """
         # --- set up the builders --- #
         # build the datasets
         srcs = SourcesBuilder(self.tokenizer)(self.literal2idiomatic)
