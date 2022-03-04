@@ -11,7 +11,7 @@ def main():
 
     # so, what do you want? you want to build an idiom-masked language modeling?
     for idiom, context, tag in epie:
-        print(context)
+        print(idiom, context)
 
     for idx, idiom in enumerate(idioms):
         print(idx, idiom)
