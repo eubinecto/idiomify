@@ -95,8 +95,7 @@ def fetch_alpha(ver: str, run: Run = None) -> Alpha:
     artifact_dir = artifact.download(root=alpha_dir(ver))
     ckpt_path = path.join(artifact_dir, "model.ckpt")
     bart = AutoModelForSeq2SeqLM.from_config(AutoConfig.from_pretrained(config['bart']))
-    with open(ckpt_path, 'r') as fh:
-        alpha = Alpha.load_from_checkpoint(ckpt_path, bart=bart)
+    alpha = Alpha.load_from_checkpoint(ckpt_path, bart=bart)
     return alpha
 
 

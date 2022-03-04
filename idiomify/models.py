@@ -47,14 +47,6 @@ class Alpha(pl.LightningModule):  # noqa
     def on_train_batch_end(self, outputs: dict, *args, **kwargs):
         self.log("Train/Loss", outputs['loss'])
 
-    def predict(self, srcs: torch.Tensor) -> torch.Tensor:
-        pred_ids = self.bart.generate(
-            inputs=srcs[:, 0],  # (N, 2, L) -> (N, L)
-            attention_mask=srcs[:, 1],  # (N, 2, L) -> (N, L)
-            decoder_start_token_id=self.hparams['bos_token_id'],
-        )
-        return pred_ids  # (N, L)
-
     def configure_optimizers(self) -> torch.optim.Optimizer:
         """
         Instantiates and returns the optimizer to be used for this model
