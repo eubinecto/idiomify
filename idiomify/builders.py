@@ -45,40 +45,39 @@ class Idiom2SubwordsBuilder(TensorBuilder):
         return input_ids
 
 
-class Idiom2ContextBuilder(TensorBuilder):
-
-    def __call__(self, idiom2context: List[Tuple[str, str]]):
-        """
-            Given a list of tuples of idiom and context,
-            it returns a tensor of shape (batch_size, 3, max_seq_len)
-            :param idiom2context: List[Tuple[str, str]], a list of tuples of idiom and context
-            :type idiom2context: List[Tuple[str, str]]
-            :return: The input_ids, token_type_ids, and attention_mask for each context.
-        """
-        contexts = [context for _, context in idiom2context]
-        encodings = self.tokenizer(text=contexts,
+class SRCBuilder(TensorBuilder):
+    """
+    to be used for both training and inference
+    """
+    def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> torch.Tensor:
+        encodings = self.tokenizer(text=[literal for literal, _ in literal2idiomatic],
                                    return_tensors="pt",
-                                   add_special_tokens=True,
-                                   truncation=True,
                                    padding=True,
-                                   verbose=True)
-        return torch.stack([encodings['input_ids'],
-                            encodings['token_type_ids'],
-                            encodings['attention_mask']], dim=1)
+                                   truncation=True,
+                                   add_special_tokens=True)
+        src = torch.stack([encodings['input_ids'],
+                           encodings['attention_mask']], dim=1)   # (N, 2, L)
+        return src  # (N, 2, L)
 
 
-class TargetsBuilder(TensorBuilder):
+class TGTBuilder(TensorBuilder):
+    """
+    This is to be used only for training. As for inference, we don't need this.
+    """
+    def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> Tuple[torch.Tensor, torch.Tensor]:
+        encodings_r = self.tokenizer([
+            self.tokenizer.bos_token + idiomatic  # starts with bos, but does not end with eos (right-shifted)
+            for _, idiomatic in literal2idiomatic
+        ], return_tensors="pt", add_special_tokens=False, padding=True, truncation=True)
+        encodings = self.tokenizer([
+            idiomatic + self.tokenizer.eos_token  # no bos, but ends with eos
+            for _, idiomatic in literal2idiomatic
+        ], return_tensors="pt", add_special_tokens=False, padding=True, truncation=True)
+        tgt_r = torch.stack([encodings_r['input_ids'],
+                             encodings_r['attention_mask']], dim=1)  # (N, 2, L)
+        tgt = torch.stack([encodings['input_ids'],
+                           encodings['attention_mask']], dim=1)  # (N, 2, L)
+        return tgt_r, tgt
 
-    def __call__(self, idiom2sent: List[Tuple[str, str]], idioms: List[str]) -> torch.Tensor:
-        """
-            Given a list of idioms and a list of sentences, return a list of indices of the idioms in the sentences
-            :param idiom2sent: A list of tuples, where each tuple is an idiom and its corresponding sentence
-            :type idiom2sent: List[Tuple[str, str]]
-            :param idioms: A list of idioms
-            :type idioms: List[str]
-            :return: A tensor of indices of the idioms in the list of idioms.
-        """
-        return torch.LongTensor([
-            idioms.index(idiom)
-            for idiom, _ in idiom2sent
-        ])
+
+

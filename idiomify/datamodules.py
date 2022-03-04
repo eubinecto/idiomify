@@ -3,7 +3,7 @@ from typing import Tuple, Optional, List
 from torch.utils.data import Dataset, DataLoader
 from pytorch_lightning import LightningDataModule
 from idiomify.fetchers import fetch_idiom2def, fetch_epie
-from idiomify.builders import Idiom2DefBuilder, Idiom2ContextBuilder, TargetsBuilder
+from idiomify.builders import Idiom2DefBuilder, Idiom2ContextBuilder, LabelsBuilder
 from transformers import BertTokenizer
 
 
@@ -67,7 +67,7 @@ class Idiom2DefDataModule(LightningDataModule):
         # --- set up the builders --- #
         # build the datasets
         X = Idiom2DefBuilder(self.tokenizer)(self.idiom2def, self.config['k'])
-        y = TargetsBuilder(self.tokenizer)(self.idiom2def, self.idioms)
+        y = LabelsBuilder(self.tokenizer)(self.idiom2def, self.idioms)
         self.dataset = IdiomifyDataset(X, y)
 
     def train_dataloader(self) -> DataLoader:
@@ -107,7 +107,7 @@ class Idiom2ContextsDataModule(LightningDataModule):
     def setup(self, stage: Optional[str] = None):
         # build the datasets
         X = Idiom2ContextBuilder(self.tokenizer)(self.idiom2context)
-        y = TargetsBuilder(self.tokenizer)(self.idiom2context, self.idioms)
+        y = LabelsBuilder(self.tokenizer)(self.idiom2context, self.idioms)
         self.dataset = IdiomifyDataset(X, y)
 
     def train_dataloader(self):
