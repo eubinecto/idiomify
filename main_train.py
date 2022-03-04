@@ -6,7 +6,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from termcolor import colored
 from transformers import BertForMaskedLM, BertTokenizer
-from idiomify.datamodules import Idiom2DefDataModule
+from idiomify.datamodules import IdiomifyDataModule
 from idiomify.fetchers import fetch_config, fetch_idioms
 from idiomify.models import Alpha, Gamma
 from idiomify.paths import ROOT_DIR
@@ -40,7 +40,7 @@ def main():
     else:
         raise ValueError
     # prepare datamodule
-    datamodule = Idiom2DefDataModule(config, tokenizer, idioms)
+    datamodule = IdiomifyDataModule(config, tokenizer, idioms)
 
     with wandb.init(entity="eubinecto", project="idiomify-demo", config=config) as run:
         logger = WandbLogger(log_model=False)

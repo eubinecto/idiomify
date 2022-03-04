@@ -4,12 +4,12 @@ builders must accept device as one of the parameters.
 """
 import torch
 from typing import List, Tuple
-from transformers import BertTokenizer
+from transformers import BertTokenizer, BartTokenizer
 
 
 class TensorBuilder:
 
-    def __init__(self, tokenizer: BertTokenizer):
+    def __init__(self, tokenizer: BartTokenizer):
         self.tokenizer = tokenizer
 
     def __call__(self, *args, **kwargs) -> torch.Tensor:
@@ -45,7 +45,7 @@ class Idiom2SubwordsBuilder(TensorBuilder):
         return input_ids
 
 
-class SRCBuilder(TensorBuilder):
+class SourcesBuilder(TensorBuilder):
     """
     to be used for both training and inference
     """
@@ -60,24 +60,29 @@ class SRCBuilder(TensorBuilder):
         return src  # (N, 2, L)
 
 
-class TGTBuilder(TensorBuilder):
-    """
-    This is to be used only for training. As for inference, we don't need this.
-    """
-    def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> Tuple[torch.Tensor, torch.Tensor]:
-        encodings_r = self.tokenizer([
+class TargetsRightShiftedBuilder(TensorBuilder):
+
+    def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> torch.Tensor:
+        encodings = self.tokenizer([
             self.tokenizer.bos_token + idiomatic  # starts with bos, but does not end with eos (right-shifted)
             for _, idiomatic in literal2idiomatic
         ], return_tensors="pt", add_special_tokens=False, padding=True, truncation=True)
+        tgts_r = torch.stack([encodings['input_ids'],
+                              encodings['attention_mask']], dim=1)  # (N, 2, L)
+        return tgts_r
+
+
+class TargetsBuilder(TensorBuilder):
+    """
+    This is to be used only for training. As for inference, we don't need this.
+    """
+    def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> torch.Tensor:
         encodings = self.tokenizer([
             idiomatic + self.tokenizer.eos_token  # no bos, but ends with eos
             for _, idiomatic in literal2idiomatic
         ], return_tensors="pt", add_special_tokens=False, padding=True, truncation=True)
-        tgt_r = torch.stack([encodings_r['input_ids'],
-                             encodings_r['attention_mask']], dim=1)  # (N, 2, L)
-        tgt = torch.stack([encodings['input_ids'],
-                           encodings['attention_mask']], dim=1)  # (N, 2, L)
-        return tgt_r, tgt
-
+        tgts = torch.stack([encodings['input_ids'],
+                            encodings['attention_mask']], dim=1)  # (N, 2, L)
+        return tgts
 
 

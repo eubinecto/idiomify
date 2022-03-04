@@ -5,10 +5,7 @@ import wandb
 import requests
 from typing import Tuple, List
 from wandb.sdk.wandb_run import Run
-from transformers import AutoModelForMaskedLM, AutoConfig, BertTokenizer
-from idiomify.builders import Idiom2SubwordsBuilder
-from idiomify.models import Alpha, RD
-from idiomify.paths import CONFIG_YAML, idioms_dir, alpha_dir, literal2idiom
+from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic
 from idiomify.urls import (
     EPIE_IMMUTABLE_IDIOMS_URL,
     EPIE_IMMUTABLE_IDIOMS_CONTEXTS_URL,
@@ -74,38 +71,18 @@ def fetch_idioms(ver: str, run: Run = None) -> List[str]:
         return [line.strip() for line in fh]
 
 
-def fetch_literal2idiom(ver: str, run: Run = None) -> List[Tuple[str, str]]:
+def fetch_literal2idiomatic(ver: str, run: Run = None) -> List[Tuple[str, str]]:
     # if run object is given, we track the lineage of the data.
     # if not, we get the dataset via wandb Api.
     if run:
         artifact = run.use_artifact("literal2idiom", type="dataset", aliases=ver)
     else:
-        artifact = wandb.Api().artifact(f"eubinecto/idiomify/literal2idiom:{ver}", type="dataset")
-    artifact_dir = artifact.download(root=literal2idiom(ver))
+        artifact = wandb.Api().artifact(f"eubinecto/idiomify/literal2idiomatic:{ver}", type="dataset")
+    artifact_dir = artifact.download(root=literal2idiomatic(ver))
     tsv_path = path.join(artifact_dir, "all.tsv")
     with open(tsv_path, 'r') as fh:
         reader = csv.reader(fh, delimiter="\t")
         return [(row[0], row[1]) for row in reader]
-
-
-def fetch_rd(model: str, ver: str) -> RD:
-    artifact = wandb.Api().artifact(f"eubinecto/idiomify-demo/{model}:{ver}", type="model")
-    config = artifact.metadata
-    artifact_path = alpha_dir(ver)
-    artifact.download(root=str(artifact_path))
-    mlm = AutoModelForMaskedLM.from_config(AutoConfig.from_pretrained(config['bert']))
-    ckpt_path = artifact_path / "rd.ckpt"
-    idioms = fetch_idioms(config['idioms_ver'])
-    tokenizer = BertTokenizer.from_pretrained(config['bert'])
-    idiom2subwords = Idiom2SubwordsBuilder(tokenizer)(idioms, config['k'])
-    # if model == Alpha.name():
-    #     rd = Alpha.load_from_checkpoint(str(ckpt_path), mlm=mlm, idiom2subwords=idiom2subwords)
-    # elif model == Gamma.name():
-    #     rd = Gamma.load_from_checkpoint(str(ckpt_path), mlm=mlm, idiom2subwords=idiom2subwords)
-    # else:
-    #     raise ValueError
-    rd = ...
-    return rd
 
 
 def fetch_config() -> dict:

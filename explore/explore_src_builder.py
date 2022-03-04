@@ -1,5 +1,5 @@
 from transformers import BartTokenizer
-from idiomify.builders import SRCBuilder
+from idiomify.builders import SourcesBuilder
 
 BATCH = [
     ("I could die at any moment", "I could kick the bucket at any moment"),
@@ -9,7 +9,7 @@ BATCH = [
 
 def main():
     tokenizer = BartTokenizer.from_pretrained("facebook/bart-large")
-    builder = SRCBuilder(tokenizer)
+    builder = SourcesBuilder(tokenizer)
     src = builder(BATCH)
     print(src)
 

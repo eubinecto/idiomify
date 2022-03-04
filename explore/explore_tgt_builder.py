@@ -1,5 +1,5 @@
 from transformers import BartTokenizer
-from idiomify.builders import TGTBuilder
+from idiomify.builders import TargetsBuilder
 
 BATCH = [
     ("I could die at any moment", "I could kick the bucket at any moment"),
@@ -9,7 +9,7 @@ BATCH = [
 
 def main():
     tokenizer = BartTokenizer.from_pretrained("facebook/bart-large")
-    builder = TGTBuilder(tokenizer)
+    builder = TargetsBuilder(tokenizer)
     tgt_r, tgt = builder(BATCH)
     print(tgt_r)
     print(tgt)

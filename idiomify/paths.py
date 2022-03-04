@@ -9,8 +9,8 @@ def idioms_dir(ver: str) -> Path:
     return ARTIFACTS_DIR / f"idioms_{ver}"
 
 
-def literal2idiom(ver: str) -> Path:
-    return ARTIFACTS_DIR / f"literal2idiom_{ver}"
+def literal2idiomatic(ver: str) -> Path:
+    return ARTIFACTS_DIR / f"literal2idiomatic_{ver}"
 
 
 def alpha_dir(ver: str) -> Path:

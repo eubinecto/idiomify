@@ -31,7 +31,7 @@ def main():
         raise NotImplementedError
 
     with wandb.init(entity="eubinecto", project="idiomify", config=config) as run:
-        artifact = wandb.Artifact(name="literal2idiom", type="dataset")
+        artifact = wandb.Artifact(name="literal2idiomatic", type="dataset")
         tsv_path = ROOT_DIR / "all.tsv"
         with open(tsv_path, 'w') as fh:
             writer = csv.writer(fh, delimiter="\t")
