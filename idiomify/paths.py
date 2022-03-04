@@ -15,7 +15,3 @@ def literal2idiomatic(ver: str) -> Path:
 
 def alpha_dir(ver: str) -> Path:
     return ARTIFACTS_DIR / f"alpha_{ver}"
-
-
-def gamma_dir(ver: str) -> Path:
-    return ARTIFACTS_DIR / f"beta_{ver}"

@@ -5,7 +5,7 @@ import wandb
 import requests
 from typing import Tuple, List
 from wandb.sdk.wandb_run import Run
-from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic
+from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic, alpha_dir
 from idiomify.urls import (
     EPIE_IMMUTABLE_IDIOMS_URL,
     EPIE_IMMUTABLE_IDIOMS_CONTEXTS_URL,
@@ -15,9 +15,10 @@ from idiomify.urls import (
     EPIE_MUTABLE_IDIOMS_TAGS_URL,
     PIE_URL
 )
+from transformers import AutoModelForSeq2SeqLM, AutoConfig
+from models import Alpha
 
 
-# sources for dataset
 def fetch_epie(ver: str) -> List[Tuple[str, str, str]]:
     """
     It fetches the EPIE idioms, contexts, and tags from the web
@@ -83,6 +84,20 @@ def fetch_literal2idiomatic(ver: str, run: Run = None) -> List[Tuple[str, str]]:
     with open(tsv_path, 'r') as fh:
         reader = csv.reader(fh, delimiter="\t")
         return [(row[0], row[1]) for row in reader]
+
+
+def fetch_alpha(ver: str, run: Run = None) -> Alpha:
+    if run:
+        artifact = run.use_artifact(f"alpha:{ver}", type="model")
+    else:
+        artifact = wandb.Api().artifact(f"eubinecto/idiomify/alpha:{ver}", type="model")
+    config = artifact.metadata
+    artifact_dir = artifact.download(root=alpha_dir(ver))
+    ckpt_path = path.join(artifact_dir, "model.ckpt")
+    bart = AutoModelForSeq2SeqLM.from_config(AutoConfig.from_pretrained(config['bart']))
+    with open(ckpt_path, 'r') as fh:
+        alpha = Alpha.load_from_checkpoint(ckpt_path, bart=bart)
+    return alpha
 
 
 def fetch_config() -> dict:
