@@ -44,6 +44,9 @@ class Alpha(pl.LightningModule):  # noqa
             "loss": loss
         }
 
+    def on_train_batch_end(self, outputs: dict, *args, **kwargs):
+        self.log("Train/Loss", outputs['loss'])
+
     def predict(self, srcs: torch.Tensor) -> torch.Tensor:
         pred_ids = self.bart.generate(
             inputs=srcs[:, 0],  # (N, 2, L) -> (N, L)
