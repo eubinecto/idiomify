@@ -38,8 +38,7 @@ class Seq2Seq(pl.LightningModule):  # noqa
 
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor, torch.Tensor]) -> dict:
         srcs, tgts_r, tgts = batch  # (N, 2, L_s), (N, 2, L_t), (N, 2, L_t)
-        logits = self.forward(srcs, tgts_r)  # -> (N, L, |V|)
-        logits = logits.transpose(1, 2)  # (N, L, |V|) -> (N, |V|, L)
+        logits = self.forward(srcs, tgts_r).transpose(1, 2)  # ... -> (N, L, |V|) -> (N, |V|, L)
         loss = F.cross_entropy(logits, tgts, ignore_index=self.hparams['pad_token_id'])\
                 .sum()  # (N, L, |V|), (N, L) -> (N,) -> (1,)
         return {
