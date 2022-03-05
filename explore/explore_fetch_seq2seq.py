@@ -1,8 +1,8 @@
-from idiomify.fetchers import fetch_alpha
+from idiomify.fetchers import fetch_seq2seq
 
 
 def main():
-    model = fetch_alpha("overfit")
+    model = fetch_seq2seq("overfit")
     print(model.bart.config)
 
 

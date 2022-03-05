@@ -5,43 +5,10 @@ import wandb
 import requests
 from typing import Tuple, List
 from wandb.sdk.wandb_run import Run
-from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic, alpha_dir
-from idiomify.urls import (
-    EPIE_IMMUTABLE_IDIOMS_URL,
-    EPIE_IMMUTABLE_IDIOMS_CONTEXTS_URL,
-    EPIE_IMMUTABLE_IDIOMS_TAGS_URL,
-    EPIE_MUTABLE_IDIOMS_URL,
-    EPIE_MUTABLE_IDIOMS_CONTEXTS_URL,
-    EPIE_MUTABLE_IDIOMS_TAGS_URL,
-    PIE_URL
-)
+from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic, seq2seq_dir
+from idiomify.urls import PIE_URL
 from transformers import AutoModelForSeq2SeqLM, AutoConfig
-from models import Alpha
-
-
-def fetch_epie(ver: str) -> List[Tuple[str, str, str]]:
-    """
-    It fetches the EPIE idioms, contexts, and tags from the web
-    :param ver: str
-    :type ver: str
-    :return: A list of tuples. Each tuple contains three strings: an idiom, a context, and a tag.
-    """
-    if ver == "immutable":
-        idioms_url = EPIE_IMMUTABLE_IDIOMS_URL
-        contexts_url = EPIE_IMMUTABLE_IDIOMS_CONTEXTS_URL
-        tags_url = EPIE_IMMUTABLE_IDIOMS_TAGS_URL
-    elif ver == "mutable":
-        idioms_url = EPIE_MUTABLE_IDIOMS_URL
-        contexts_url = EPIE_MUTABLE_IDIOMS_CONTEXTS_URL
-        tags_url = EPIE_MUTABLE_IDIOMS_TAGS_URL
-    else:
-        raise ValueError
-    idioms = requests.get(idioms_url).text
-    contexts = requests.get(contexts_url).text
-    tags = requests.get(tags_url).text
-    return list(zip(idioms.strip().split("\n"),
-                    contexts.strip().split("\n"),
-                    tags.strip().split("\n")))
+from idiomify.models import Seq2Seq
 
 
 def fetch_pie() -> list:
@@ -86,16 +53,16 @@ def fetch_literal2idiomatic(ver: str, run: Run = None) -> List[Tuple[str, str]]:
         return [(row[0], row[1]) for row in reader]
 
 
-def fetch_alpha(ver: str, run: Run = None) -> Alpha:
+def fetch_seq2seq(ver: str, run: Run = None) -> Seq2Seq:
     if run:
-        artifact = run.use_artifact(f"alpha:{ver}", type="model")
+        artifact = run.use_artifact(f"seq2seq:{ver}", type="model")
     else:
-        artifact = wandb.Api().artifact(f"eubinecto/idiomify/alpha:{ver}", type="model")
+        artifact = wandb.Api().artifact(f"eubinecto/idiomify/seq2seq:{ver}", type="model")
     config = artifact.metadata
-    artifact_dir = artifact.download(root=alpha_dir(ver))
+    artifact_dir = artifact.download(root=seq2seq_dir(ver))
     ckpt_path = path.join(artifact_dir, "model.ckpt")
     bart = AutoModelForSeq2SeqLM.from_config(AutoConfig.from_pretrained(config['bart']))
-    alpha = Alpha.load_from_checkpoint(ckpt_path, bart=bart)
+    alpha = Seq2Seq.load_from_checkpoint(ckpt_path, bart=bart)
     return alpha
 
 

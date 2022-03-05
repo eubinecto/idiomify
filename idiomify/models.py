@@ -5,12 +5,14 @@ from typing import Tuple
 import torch
 from torch.nn import functional as F
 import pytorch_lightning as pl
-from transformers import BartForConditionalGeneration
+from transformers import BartForConditionalGeneration, BartTokenizer
+from idiomify.builders import SourcesBuilder
 
 
-class Alpha(pl.LightningModule):  # noqa
+# for training
+class Seq2Seq(pl.LightningModule):  # noqa
     """
-    the baseline.
+    the baseline is in here.
     """
     def __init__(self, bart: BartForConditionalGeneration, lr: float, bos_token_id: int, pad_token_id: int):  # noqa
         super().__init__()
@@ -54,3 +56,23 @@ class Alpha(pl.LightningModule):  # noqa
         """
         # The authors used Adam, so we might as well use it as well.
         return torch.optim.AdamW(self.parameters(), lr=self.hparams['lr'])
+
+
+# for inference
+class Idiomifier:
+
+    def __init__(self, model: Seq2Seq, tokenizer: BartTokenizer):
+        self.model = model
+        self.builder = SourcesBuilder(tokenizer)
+        self.model.eval()
+
+    def __call__(self, src: str, max_length=100) -> str:
+        srcs = self.builder(literal2idiomatic=[(src, "")])
+        pred_ids = self.model.bart.generate(
+            inputs=srcs[:, 0],  # (N, 2, L) -> (N, L)
+            attention_mask=srcs[:, 1],  # (N, 2, L) -> (N, L)
+            decoder_start_token_id=self.model.hparams['bos_token_id'],
+            max_length=max_length,
+        ).squeeze()  # -> (N, L_t) -> (L_t)
+        tgt = self.builder.tokenizer.decode(pred_ids, skip_special_tokens=True)
+        return tgt

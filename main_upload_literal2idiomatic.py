@@ -12,20 +12,14 @@ import wandb
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ver", type=str, default="pie_v0",
-                        choices=["pie_v0", "pie_v1"])
+    parser.add_argument("--ver", type=str, default="tag01")
     config = vars(parser.parse_args())
 
     # get the idioms here
-    if config['ver'] == "pie_v0":
+    if config['ver'] == "tag01":
         # only the first 106, and we use this just for piloting
         literal2idiom = [
             (row[3], row[2]) for row in fetch_pie()[:106]
-        ]
-    elif config['ver'] == "pie_v1":
-        # just include all
-        literal2idiom = [
-            (row[3], row[2]) for row in fetch_pie()
         ]
     else:
         raise NotImplementedError

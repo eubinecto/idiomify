@@ -8,20 +8,19 @@ from pytorch_lightning.loggers import WandbLogger
 from transformers import BartTokenizer, BartForConditionalGeneration
 from idiomify.data import IdiomifyDataModule
 from idiomify.fetchers import fetch_config
-from idiomify.models import Alpha
+from idiomify.models import Seq2Seq
 from idiomify.paths import ROOT_DIR
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="alpha")
-    parser.add_argument("--ver", type=str, default="overfit ")
+    parser.add_argument("--ver", type=str, default="tag011")
     parser.add_argument("--num_workers", type=int, default=os.cpu_count())
     parser.add_argument("--log_every_n_steps", type=int, default=1)
     parser.add_argument("--fast_dev_run", action="store_true", default=False)
     parser.add_argument("--upload", dest='upload', action='store_true', default=False)
     args = parser.parse_args()
-    config = fetch_config()[args.model][args.ver]
+    config = fetch_config()[args.ver]
     config.update(vars(args))
     if not config['upload']:
         print(colored("WARNING: YOU CHOSE NOT TO UPLOAD. NOTHING BUT LOGS WILL BE SAVED TO WANDB", color="red"))
@@ -29,12 +28,8 @@ def main():
     # prepare the model
     bart = BartForConditionalGeneration.from_pretrained(config['bart'])
     tokenizer = BartTokenizer.from_pretrained(config['bart'])
-    if config['model'] == "alpha":
-        model = Alpha(bart, config['lr'], tokenizer.bos_token_id, tokenizer.pad_token_id)
-    else:
-        raise NotImplementedError
+    model = Seq2Seq(bart, config['lr'], tokenizer.bos_token_id, tokenizer.pad_token_id)
     # prepare the datamodule
-
     with wandb.init(entity="eubinecto", project="idiomify", config=config) as run:
         datamodule = IdiomifyDataModule(config, tokenizer, run)
         logger = WandbLogger(log_model=False)

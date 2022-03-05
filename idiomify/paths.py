@@ -6,12 +6,12 @@ CONFIG_YAML = ROOT_DIR / "config.yaml"
 
 
 def idioms_dir(ver: str) -> Path:
-    return ARTIFACTS_DIR / f"idioms_{ver}"
+    return ARTIFACTS_DIR / f"idioms-{ver}"
 
 
 def literal2idiomatic(ver: str) -> Path:
-    return ARTIFACTS_DIR / f"literal2idiomatic_{ver}"
+    return ARTIFACTS_DIR / f"literal2idiomatic-{ver}"
 
 
-def alpha_dir(ver: str) -> Path:
-    return ARTIFACTS_DIR / f"alpha_{ver}"
+def seq2seq_dir(ver: str) -> Path:
+    return ARTIFACTS_DIR / f"seq2seq-{ver}"

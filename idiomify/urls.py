@@ -11,6 +11,3 @@ EPIE_MUTABLE_IDIOMS_CONTEXTS_URL = "https://github.com/prateeksaxena2809/EPIE_Co
 # https://aclanthology.org/2021.mwe-1.5/
 # right, let's just work on it.
 PIE_URL = "https://raw.githubusercontent.com/zhjjn/MWE_PIE/main/data_cleaned.csv"
-
-
-

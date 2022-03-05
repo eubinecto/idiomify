@@ -1,10 +1,10 @@
 from transformers import BartTokenizer
 from builders import SourcesBuilder
-from fetchers import fetch_alpha
+from fetchers import fetch_seq2seq
 
 
 def main():
-    model = fetch_alpha("overfit")
+    model = fetch_seq2seq("overfit")
     tokenizer = BartTokenizer.from_pretrained("facebook/bart-base")
     lit2idi = [
         ("my man", ""),

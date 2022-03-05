@@ -4,7 +4,7 @@ builders must accept device as one of the parameters.
 """
 import torch
 from typing import List, Tuple
-from transformers import BertTokenizer, BartTokenizer
+from transformers import BartTokenizer
 
 
 class TensorBuilder:
@@ -61,7 +61,9 @@ class SourcesBuilder(TensorBuilder):
 
 
 class TargetsRightShiftedBuilder(TensorBuilder):
-
+    """
+    This is to be used only for training. As for inference, we don't need this.
+    """
     def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> torch.Tensor:
         encodings = self.tokenizer([
             self.tokenizer.bos_token + idiomatic  # starts with bos, but does not end with eos (right-shifted)
@@ -73,9 +75,7 @@ class TargetsRightShiftedBuilder(TensorBuilder):
 
 
 class TargetsBuilder(TensorBuilder):
-    """
-    This is to be used only for training. As for inference, we don't need this.
-    """
+
     def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> torch.Tensor:
         encodings = self.tokenizer([
             idiomatic + self.tokenizer.eos_token  # no bos, but ends with eos

@@ -1,8 +1,8 @@
-alpha:
-  overfit:
-    bart: facebook/bart-base
-    lr: 0.0001
-    literal2idiomatic_ver: pie_v0
-    max_epochs: 100
-    batch_size: 100
-    shuffle: true
+tag011:
+  desc: just overfitting
+  bart: facebook/bart-base
+  lr: 0.0001
+  literal2idiomatic_ver: tag01
+  max_epochs: 100
+  batch_size: 100
+  shuffle: true
