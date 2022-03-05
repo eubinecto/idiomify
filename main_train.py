@@ -46,7 +46,7 @@ def main():
         if not config['fast_dev_run'] and trainer.current_epoch == config['max_epochs'] - 1:
             ckpt_path = ROOT_DIR / "model.ckpt"
             trainer.save_checkpoint(str(ckpt_path))
-            artifact = wandb.Artifact(name=config['model'], type="model", metadata=config)
+            artifact = wandb.Artifact(name="seq2seq", type="model", metadata=config)
             artifact.add_file(str(ckpt_path))
             run.log_artifact(artifact, aliases=["latest", config['ver']])
             os.remove(str(ckpt_path))  # make sure you remove it after you are done with uploading it
