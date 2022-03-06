@@ -55,9 +55,9 @@ class SourcesBuilder(TensorBuilder):
                                    padding=True,
                                    truncation=True,
                                    add_special_tokens=True)
-        src = torch.stack([encodings['input_ids'],
-                           encodings['attention_mask']], dim=1)   # (N, 2, L)
-        return src  # (N, 2, L)
+        srcs = torch.stack([encodings['input_ids'],
+                            encodings['attention_mask']], dim=1)   # (N, 2, L)
+        return srcs  # (N, 2, L)
 
 
 class TargetsRightShiftedBuilder(TensorBuilder):

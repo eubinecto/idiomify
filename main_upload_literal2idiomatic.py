@@ -1,39 +1,40 @@
 """
-Here, what should you do here?
-just upload all idioms here - name it as epie.
+literal2idiomatic ver: d-1-2
 """
-import csv
 import os
 from idiomify.paths import ROOT_DIR
-from idiomify.fetchers import fetch_pie
-import argparse
+from idiomify.fetchers import fetch_pie, fetch_config
+from idiomify.preprocess import upsample, cleanse, stratified_split
 import wandb
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ver", type=str, default="tag01")
-    config = vars(parser.parse_args())
 
-    # get the idioms here
-    if config['ver'] == "tag01":
-        # only the first 106, and we use this just for piloting
-        literal2idiom = [
-            (row[3], row[2]) for row in fetch_pie()[:106]
-        ]
-    else:
-        raise NotImplementedError
-
-    with wandb.init(entity="eubinecto", project="idiomify", config=config) as run:
-        artifact = wandb.Artifact(name="literal2idiomatic", type="dataset")
-        tsv_path = ROOT_DIR / "all.tsv"
-        with open(tsv_path, 'w') as fh:
-            writer = csv.writer(fh, delimiter="\t")
-            for row in literal2idiom:
-                writer.writerow(row)
-        artifact.add_file(tsv_path)
+    # here, we use all of them, while splitting them into train & test
+    pie_df = fetch_pie()
+    config = fetch_config()['upload']['literal2idiomatic']
+    train_df, test_df = pie_df.pipe(cleanse)\
+                              .pipe(upsample, seed=config['seed'])\
+                              .pipe(stratified_split, ratio=config['train_ratio'], seed=config['seed'])
+    # why don't you just "select"  the columns? yeah, stop using csv library. just select them.
+    train_df = train_df[["Idiom", "Literal_Sent", "Idiomatic_Sent"]]
+    test_df = test_df[["Idiom", "Literal_Sent", "Idiomatic_Sent"]]
+    dfs = (train_df, test_df)
+    with wandb.init(entity="eubinecto", project="idiomify") as run:
+        # the paths to write datasets in
+        train_path = ROOT_DIR / "train.tsv"
+        test_path = ROOT_DIR / "test.tsv"
+        paths = (train_path, test_path)
+        artifact = wandb.Artifact(name="literal2idiomatic", type="dataset", description=config['description'],
+                                  metadata=config)
+        for tsv_path, df in zip(paths, dfs):
+            df.to_csv(tsv_path, sep="\t")
+            artifact.add_file(tsv_path)
+        # then, we just log them here.
         run.log_artifact(artifact, aliases=["latest", config['ver']])
-        os.remove(tsv_path)
+        # don't forget to remove them
+        for tsv_path in paths:
+            os.remove(tsv_path)
 
 
 if __name__ == '__main__':

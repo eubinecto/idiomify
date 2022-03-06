@@ -1,3 +1,4 @@
 pytorch-lightning==1.5.10
 transformers==4.16.2
 wandb==0.12.10
+scikit-learn==1.0.2

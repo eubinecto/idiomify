@@ -1,8 +1,20 @@
-tag011:
-  desc: just overfitting
+train:
+  ver: m-1-2
+  desc: just overfitting the model, but on the entire PIE dataset.
   bart: facebook/bart-base
   lr: 0.0001
-  literal2idiomatic_ver: tag01
+  literal2idiomatic_ver: d-1-2
   max_epochs: 100
   batch_size: 100
   shuffle: true
+
+# for building & uploading datasets or others
+upload:
+  idioms:
+    ver: d-1-2
+    description: the set of idioms in the traning set of literal2idiomatic:d-1-2
+  literal2idiomatic:
+    ver: d-1-2
+    description: PIE data split into train & test set (80 / 20 split)
+    train_ratio: 0.8
+    seed: 104

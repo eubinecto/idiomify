@@ -9,8 +9,7 @@ from transformers import BartForConditionalGeneration, BartTokenizer
 from idiomify.builders import SourcesBuilder
 
 
-# for training
-class Seq2Seq(pl.LightningModule):  # noqa
+class Idiomifier(pl.LightningModule):  # noqa
     """
     the baseline is in here.
     """
@@ -58,12 +57,11 @@ class Seq2Seq(pl.LightningModule):  # noqa
 
 
 # for inference
-class Idiomifier:
+class Pipeline:
 
-    def __init__(self, model: Seq2Seq, tokenizer: BartTokenizer):
+    def __init__(self, model: Idiomifier, tokenizer: BartTokenizer):
         self.model = model
         self.builder = SourcesBuilder(tokenizer)
-        self.model.eval()
 
     def __call__(self, src: str, max_length=100) -> str:
         srcs = self.builder(literal2idiomatic=[(src, "")])

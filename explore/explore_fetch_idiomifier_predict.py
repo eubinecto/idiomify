@@ -1,10 +1,10 @@
 from transformers import BartTokenizer
 from builders import SourcesBuilder
-from fetchers import fetch_seq2seq
+from fetchers import fetch_idiomifier
 
 
 def main():
-    model = fetch_seq2seq("overfit")
+    model = fetch_idiomifier("m-1-2")
     tokenizer = BartTokenizer.from_pretrained("facebook/bart-base")
     lit2idi = [
         ("my man", ""),
