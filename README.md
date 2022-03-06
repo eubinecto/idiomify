@@ -1,3 +1,13 @@
+---
+title: Idiomify demo
+emoji: ✍️
+colorFrom: yellow
+colorTo: orange
+sdk: streamlit
+app_file: main_deploy.py
+pinned: false
+---
+
 # Idiomify
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/eubinecto/idiomify/issue_2/main_deploy.py)
 

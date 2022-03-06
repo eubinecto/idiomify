@@ -21,6 +21,7 @@ def fetch_resources() -> Tuple[dict, Idiomifier, BartTokenizer, List[str]]:
 def main():
     # fetch a pre-trained model
     config, model, tokenizer, idioms = fetch_resources()
+    model.eval()
     pipeline = Pipeline(model, tokenizer)
     st.title("Idiomify Demo")
     st.markdown(f"Author: `Eu-Bin KIM`")
