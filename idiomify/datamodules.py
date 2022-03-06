@@ -1,7 +1,7 @@
-import pandas as pd
 import torch
-from typing import Tuple, Optional
+import pandas as pd
 from torch.utils.data import Dataset, DataLoader
+from typing import Tuple, Optional
 from pytorch_lightning import LightningDataModule
 from wandb.sdk.wandb_run import Run
 from idiomify.fetchers import fetch_literal2idiomatic

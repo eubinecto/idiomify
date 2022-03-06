@@ -1,9 +1,5 @@
-
-# for inference
 from typing import List
-
 from transformers import BartTokenizer
-
 from builders import SourcesBuilder
 from models import Idiomifier
 

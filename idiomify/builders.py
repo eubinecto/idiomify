@@ -83,5 +83,3 @@ class TargetsBuilder(TensorBuilder):
         ], return_tensors="pt", add_special_tokens=False, padding=True, truncation=True)
         tgts = encodings['input_ids']
         return tgts  # (N, L)
-
-
