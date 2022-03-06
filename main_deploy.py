@@ -10,19 +10,21 @@ from idiomify.models import Idiomifier
 
 
 @st.cache(allow_output_mutation=True)
-def fetch() -> Tuple[Idiomifier, BartTokenizer, List[str]]:
+def fetch_resources() -> Tuple[dict, Idiomifier, BartTokenizer, List[str]]:
     config = fetch_config()['idiomifier']
     model = fetch_idiomifier(config['ver'])
     idioms = fetch_idioms(config['idioms_ver'])
     tokenizer = BartTokenizer.from_pretrained(config['bart'])
-    return model, tokenizer, idioms
+    return config, model, tokenizer, idioms
 
 
 def main():
     # fetch a pre-trained model
-    model, tokenizer, idioms = fetch()
+    config, model, tokenizer, idioms = fetch_resources()
     pipeline = Pipeline(model, tokenizer)
     st.title("Idiomify Demo")
+    st.markdown(f"Author: `Eu-Bin KIM`")
+    st.markdown(f"Version: `{config['ver']}`")
     text = st.text_area("Type sentences here",
                         value="Just remember there will always be a hope even when things look black")
     with st.sidebar:
