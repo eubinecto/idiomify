@@ -2,7 +2,7 @@ from idiomify.fetchers import fetch_idioms
 
 
 def main():
-    print(fetch_idioms("pie_v0"))
+    print(fetch_idioms("d-1-2"))
 
 
 if __name__ == '__main__':

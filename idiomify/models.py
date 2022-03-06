@@ -7,17 +7,19 @@ from torch.nn import functional as F
 import pytorch_lightning as pl
 from transformers import BartForConditionalGeneration, BartTokenizer
 from idiomify.builders import SourcesBuilder
+from torchmetrics import Accuracy
 
-
-# for training
-class Seq2Seq(pl.LightningModule):  # noqa
+class Idiomifier(pl.LightningModule):  # noqa
     """
     the baseline is in here.
     """
     def __init__(self, bart: BartForConditionalGeneration, lr: float, bos_token_id: int, pad_token_id: int):  # noqa
         super().__init__()
-        self.bart = bart
         self.save_hyperparameters(ignore=["bart"])
+        self.bart = bart
+        # metrics (using accuracies as of right now)
+        self.acc_train = Accuracy(ignore_index=pad_token_id)
+        self.acc_test = Accuracy(ignore_index=pad_token_id)
 
     def forward(self, srcs: torch.Tensor, tgts_r: torch.Tensor) -> torch.Tensor:
         """
@@ -38,16 +40,29 @@ class Seq2Seq(pl.LightningModule):  # noqa
 
     def training_step(self, batch: Tuple[torch.Tensor, torch.Tensor, torch.Tensor]) -> dict:
         srcs, tgts_r, tgts = batch  # (N, 2, L_s), (N, 2, L_t), (N, 2, L_t)
-        logits = self.forward(srcs, tgts_r)  # -> (N, L, |V|)
-        logits = logits.transpose(1, 2)  # (N, L, |V|) -> (N, |V|, L)
+        logits = self.forward(srcs, tgts_r).transpose(1, 2)  # ... -> (N, L, |V|) -> (N, |V|, L)
         loss = F.cross_entropy(logits, tgts, ignore_index=self.hparams['pad_token_id'])\
                 .sum()  # (N, L, |V|), (N, L) -> (N,) -> (1,)
+        self.acc_train.update(logits.detach(), target=tgts.detach())
         return {
             "loss": loss
         }
 
     def on_train_batch_end(self, outputs: dict, *args, **kwargs):
         self.log("Train/Loss", outputs['loss'])
+
+    def on_train_epoch_end(self, *args, **kwargs) -> None:
+        self.log("Train/Accuracy", self.acc_train.compute())
+        self.acc_train.reset()
+
+    def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor, torch.Tensor], *args, **kwargs):
+        srcs, tgts_r, tgts = batch  # (N, 2, L_s), (N, 2, L_t), (N, 2, L_t)
+        logits = self.forward(srcs, tgts_r).transpose(1, 2)  # ... -> (N, L, |V|) -> (N, |V|, L)
+        self.acc_test.update(logits.detach(), target=tgts.detach())
+
+    def on_test_epoch_end(self, *args, **kwargs) -> None:
+        self.log("Test/Accuracy", self.acc_test.compute())
+        self.acc_test.reset()
 
     def configure_optimizers(self) -> torch.optim.Optimizer:
         """
@@ -57,22 +72,3 @@ class Seq2Seq(pl.LightningModule):  # noqa
         # The authors used Adam, so we might as well use it as well.
         return torch.optim.AdamW(self.parameters(), lr=self.hparams['lr'])
 
-
-# for inference
-class Idiomifier:
-
-    def __init__(self, model: Seq2Seq, tokenizer: BartTokenizer):
-        self.model = model
-        self.builder = SourcesBuilder(tokenizer)
-        self.model.eval()
-
-    def __call__(self, src: str, max_length=100) -> str:
-        srcs = self.builder(literal2idiomatic=[(src, "")])
-        pred_ids = self.model.bart.generate(
-            inputs=srcs[:, 0],  # (N, 2, L) -> (N, L)
-            attention_mask=srcs[:, 1],  # (N, 2, L) -> (N, L)
-            decoder_start_token_id=self.model.hparams['bos_token_id'],
-            max_length=max_length,
-        ).squeeze()  # -> (N, L_t) -> (L_t)
-        tgt = self.builder.tokenizer.decode(pred_ids, skip_special_tokens=True)
-        return tgt

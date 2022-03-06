@@ -1,9 +1,9 @@
 import torch
-from typing import Tuple, Optional, List
+import pandas as pd
 from torch.utils.data import Dataset, DataLoader
+from typing import Tuple, Optional
 from pytorch_lightning import LightningDataModule
 from wandb.sdk.wandb_run import Run
-
 from idiomify.fetchers import fetch_literal2idiomatic
 from idiomify.builders import SourcesBuilder, TargetsBuilder, TargetsRightShiftedBuilder
 from transformers import BartTokenizer
@@ -38,9 +38,6 @@ class IdiomifyDataset(Dataset):
 class IdiomifyDataModule(LightningDataModule):
 
     # boilerplate - just ignore these
-    def test_dataloader(self):
-        pass
-
     def val_dataloader(self):
         pass
 
@@ -56,23 +53,37 @@ class IdiomifyDataModule(LightningDataModule):
         self.tokenizer = tokenizer
         self.run = run
         # --- to be downloaded & built --- #
-        self.literal2idiomatic: Optional[List[Tuple[str, str]]] = None
-        self.dataset: Optional[IdiomifyDataset] = None
+        self.train_df: Optional[pd.DataFrame] = None
+        self.test_df: Optional[pd.DataFrame] = None
+        self.train_dataset: Optional[IdiomifyDataset] = None
+        self.test_dataset: Optional[IdiomifyDataset] = None
 
     def prepare_data(self):
         """
         prepare: download all data needed for this from wandb to local.
         """
-        self.literal2idiomatic = fetch_literal2idiomatic(self.config['literal2idiomatic_ver'], self.run)
+        self.train_df, self.test_df = fetch_literal2idiomatic(self.config['literal2idiomatic_ver'], self.run)
 
     def setup(self, stage: Optional[str] = None):
         # --- set up the builders --- #
         # build the datasets
-        srcs = SourcesBuilder(self.tokenizer)(self.literal2idiomatic)
-        tgts_r = TargetsRightShiftedBuilder(self.tokenizer)(self.literal2idiomatic)
-        tgts = TargetsBuilder(self.tokenizer)(self.literal2idiomatic)
-        self.dataset = IdiomifyDataset(srcs, tgts_r, tgts)
+        self.train_dataset = self.build_dataset(self.train_df)
+        self.test_dataset = self.build_dataset(self.test_df)
+
+    def build_dataset(self, df: pd.DataFrame) -> IdiomifyDataset:
+        literal2idiomatic = [
+            (row['Literal_Sent'], row['Idiomatic_Sent'])
+            for _, row in df.iterrows()
+        ]
+        srcs = SourcesBuilder(self.tokenizer)(literal2idiomatic)
+        tgts_r = TargetsRightShiftedBuilder(self.tokenizer)(literal2idiomatic)
+        tgts = TargetsBuilder(self.tokenizer)(literal2idiomatic)
+        return IdiomifyDataset(srcs, tgts_r, tgts)
 
     def train_dataloader(self) -> DataLoader:
-        return DataLoader(self.dataset, batch_size=self.config['batch_size'],
+        return DataLoader(self.train_dataset, batch_size=self.config['batch_size'],
                           shuffle=self.config['shuffle'], num_workers=self.config['num_workers'])
+
+    def test_dataloader(self) -> DataLoader:
+        return DataLoader(self.test_dataset, batch_size=self.config['batch_size'],
+                          shuffle=False, num_workers=self.config['num_workers'])

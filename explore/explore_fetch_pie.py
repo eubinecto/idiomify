@@ -3,11 +3,9 @@ from idiomify.fetchers import fetch_pie
 
 
 def main():
-    for idx, row in enumerate(fetch_pie()):
-        print(idx, row)
-        # the first 105 = V0.
-        if idx == 105:
-            break
+    pie_df = fetch_pie()
+    for idx, row in pie_df.iterrows():
+        print(row)
 
 
 if __name__ == '__main__':
