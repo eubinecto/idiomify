@@ -1,6 +1,6 @@
 from transformers import BartTokenizer, BartForConditionalGeneration
 
-from data import IdiomifyDataModule
+from datamodules import IdiomifyDataModule
 
 
 CONFIG = {

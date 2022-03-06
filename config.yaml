@@ -1,20 +1,19 @@
-train:
+idiomifier:
   ver: m-1-2
   desc: just overfitting the model, but on the entire PIE dataset.
   bart: facebook/bart-base
   lr: 0.0001
   literal2idiomatic_ver: d-1-2
-  max_epochs: 100
-  batch_size: 100
+  max_epochs: 2
+  batch_size: 40
   shuffle: true
 
-# for building & uploading datasets or others
-upload:
-  idioms:
-    ver: d-1-2
-    description: the set of idioms in the traning set of literal2idiomatic_d-1-2.
-  literal2idiomatic:
-    ver: d-1-2
-    description: PIE data split into train & test set (80 / 20 split). There is no validation set because I don't intend to do any hyperparameter tuning on this thing.
-    train_ratio: 0.8
-    seed: 104
+# for building & uploading datasets or tokenizer
+idioms:
+  ver: d-1-2
+  description: the set of idioms in the traning set of literal2idiomatic_d-1-2.
+literal2idiomatic:
+  ver: d-1-2
+  description: PIE data split into train & test set (80 / 20 split). There is no validation set because I don't intend to do any hyperparameter tuning on this thing.
+  train_ratio: 0.8
+  seed: 104

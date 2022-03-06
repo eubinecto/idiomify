@@ -6,7 +6,7 @@ import pytorch_lightning as pl
 from termcolor import colored
 from pytorch_lightning.loggers import WandbLogger
 from transformers import BartTokenizer, BartForConditionalGeneration
-from idiomify.data import IdiomifyDataModule
+from idiomify.datamodules import IdiomifyDataModule
 from idiomify.fetchers import fetch_config
 from idiomify.models import Idiomifier
 from idiomify.paths import ROOT_DIR
@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--fast_dev_run", action="store_true", default=False)
     parser.add_argument("--upload", dest='upload', action='store_true', default=False)
     args = parser.parse_args()
-    config = fetch_config()['train']
+    config = fetch_config()['idiomifier']
     config.update(vars(args))
     if not config['upload']:
         print(colored("WARNING: YOU CHOSE NOT TO UPLOAD. NOTHING BUT LOGS WILL BE SAVED TO WANDB", color="red"))

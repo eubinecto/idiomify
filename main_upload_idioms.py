@@ -9,7 +9,7 @@ from idiomify.paths import ROOT_DIR
 
 
 def main():
-    config = fetch_config()['upload']['idioms']
+    config = fetch_config()['idioms']
     train_df, _ = fetch_literal2idiomatic(config['ver'])
     idioms = train_df['Idiom'].tolist()
     idioms = list(set(idioms))

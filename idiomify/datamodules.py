@@ -84,6 +84,6 @@ class IdiomifyDataModule(LightningDataModule):
         return DataLoader(self.train_dataset, batch_size=self.config['batch_size'],
                           shuffle=self.config['shuffle'], num_workers=self.config['num_workers'])
 
-    def test_dataloader(self):
+    def test_dataloader(self) -> DataLoader:
         return DataLoader(self.test_dataset, batch_size=self.config['batch_size'],
                           shuffle=False, num_workers=self.config['num_workers'])

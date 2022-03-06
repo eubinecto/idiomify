@@ -53,9 +53,9 @@ def fetch_idiomifier(ver: str, run: Run = None) -> Idiomifier:
     The current Idiomifier then turns into a pipeline.
     """
     if run:
-        artifact = run.use_artifact(f"seq2seq:{ver}", type="model")
+        artifact = run.use_artifact(f"idiomifier:{ver}", type="model")
     else:
-        artifact = wandb.Api().artifact(f"eubinecto/idiomify/seq2seq:{ver}", type="model")
+        artifact = wandb.Api().artifact(f"eubinecto/idiomify/idiomifier:{ver}", type="model")
     config = artifact.metadata
     artifact_dir = artifact.download(root=seq2seq_dir(ver))
     ckpt_path = path.join(artifact_dir, "model.ckpt")

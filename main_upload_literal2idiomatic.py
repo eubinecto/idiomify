@@ -12,7 +12,7 @@ def main():
 
     # here, we use all of them, while splitting them into train & test
     pie_df = fetch_pie()
-    config = fetch_config()['upload']['literal2idiomatic']
+    config = fetch_config()['literal2idiomatic']
     train_df, test_df = pie_df.pipe(cleanse)\
                               .pipe(upsample, seed=config['seed'])\
                               .pipe(stratified_split, ratio=config['train_ratio'], seed=config['seed'])

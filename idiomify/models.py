@@ -48,19 +48,19 @@ class Idiomifier(pl.LightningModule):  # noqa
             "loss": loss
         }
 
-    def on_train_batch_end(self, outputs: dict, **kwargs):
+    def on_train_batch_end(self, outputs: dict, *args, **kwargs):
         self.log("Train/Loss", outputs['loss'])
 
     def on_train_epoch_end(self, *args, **kwargs) -> None:
         self.log("Train/Accuracy", self.acc_train.compute())
         self.acc_train.reset()
 
-    def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor, torch.Tensor], **kwargs):
+    def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor, torch.Tensor], *args, **kwargs):
         srcs, tgts_r, tgts = batch  # (N, 2, L_s), (N, 2, L_t), (N, 2, L_t)
         logits = self.forward(srcs, tgts_r).transpose(1, 2)  # ... -> (N, L, |V|) -> (N, |V|, L)
         self.acc_test.update(logits.detach(), target=tgts.detach())
 
-    def on_test_end(self):
+    def on_test_epoch_end(self, *args, **kwargs) -> None:
         self.log("Test/Accuracy", self.acc_test.compute())
         self.acc_test.reset()
 
@@ -72,21 +72,3 @@ class Idiomifier(pl.LightningModule):  # noqa
         # The authors used Adam, so we might as well use it as well.
         return torch.optim.AdamW(self.parameters(), lr=self.hparams['lr'])
 
-
-# for inference
-class Pipeline:
-
-    def __init__(self, model: Idiomifier, tokenizer: BartTokenizer):
-        self.model = model
-        self.builder = SourcesBuilder(tokenizer)
-
-    def __call__(self, src: str, max_length=100) -> str:
-        srcs = self.builder(literal2idiomatic=[(src, "")])
-        pred_ids = self.model.bart.generate(
-            inputs=srcs[:, 0],  # (N, 2, L) -> (N, L)
-            attention_mask=srcs[:, 1],  # (N, 2, L) -> (N, L)
-            decoder_start_token_id=self.model.hparams['bos_token_id'],
-            max_length=max_length,
-        ).squeeze()  # -> (N, L_t) -> (L_t)
-        tgt = self.builder.tokenizer.decode(pred_ids, skip_special_tokens=True)
-        return tgt

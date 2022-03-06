@@ -1,5 +1,5 @@
 from transformers import BartTokenizer
-from idiomify.data import IdiomifyDataModule
+from idiomify.datamodules import IdiomifyDataModule
 
 
 CONFIG = {
