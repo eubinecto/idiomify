@@ -7,7 +7,7 @@ from torch.nn import functional as F
 import pytorch_lightning as pl
 from transformers import BartForConditionalGeneration, BartTokenizer
 from idiomify.builders import SourcesBuilder
-
+from torchmetrics import Accuracy
 
 class Idiomifier(pl.LightningModule):  # noqa
     """
@@ -15,8 +15,11 @@ class Idiomifier(pl.LightningModule):  # noqa
     """
     def __init__(self, bart: BartForConditionalGeneration, lr: float, bos_token_id: int, pad_token_id: int):  # noqa
         super().__init__()
-        self.bart = bart
         self.save_hyperparameters(ignore=["bart"])
+        self.bart = bart
+        # metrics (using accuracies as of right now)
+        self.acc_train = Accuracy(ignore_index=pad_token_id)
+        self.acc_test = Accuracy(ignore_index=pad_token_id)
 
     def forward(self, srcs: torch.Tensor, tgts_r: torch.Tensor) -> torch.Tensor:
         """
@@ -40,12 +43,26 @@ class Idiomifier(pl.LightningModule):  # noqa
         logits = self.forward(srcs, tgts_r).transpose(1, 2)  # ... -> (N, L, |V|) -> (N, |V|, L)
         loss = F.cross_entropy(logits, tgts, ignore_index=self.hparams['pad_token_id'])\
                 .sum()  # (N, L, |V|), (N, L) -> (N,) -> (1,)
+        self.acc_train.update(logits.detach(), target=tgts.detach())
         return {
             "loss": loss
         }
 
-    def on_train_batch_end(self, outputs: dict, *args, **kwargs):
+    def on_train_batch_end(self, outputs: dict, **kwargs):
         self.log("Train/Loss", outputs['loss'])
+
+    def on_train_epoch_end(self, *args, **kwargs) -> None:
+        self.log("Train/Accuracy", self.acc_train.compute())
+        self.acc_train.reset()
+
+    def test_step(self, batch: Tuple[torch.Tensor, torch.Tensor, torch.Tensor], **kwargs):
+        srcs, tgts_r, tgts = batch  # (N, 2, L_s), (N, 2, L_t), (N, 2, L_t)
+        logits = self.forward(srcs, tgts_r).transpose(1, 2)  # ... -> (N, L, |V|) -> (N, |V|, L)
+        self.acc_test.update(logits.detach(), target=tgts.detach())
+
+    def on_test_end(self):
+        self.log("Test/Accuracy", self.acc_test.compute())
+        self.acc_test.reset()
 
     def configure_optimizers(self) -> torch.optim.Optimizer:
         """
