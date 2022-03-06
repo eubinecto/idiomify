@@ -1,7 +1,7 @@
 from typing import List
 from transformers import BartTokenizer
-from builders import SourcesBuilder
-from models import Idiomifier
+from idiomify.builders import SourcesBuilder
+from idiomify.models import Idiomifier
 
 
 class Pipeline:
