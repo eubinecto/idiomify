@@ -7,6 +7,7 @@ idiomifier:
   max_epochs: 2
   batch_size: 40
   shuffle: true
+  seed: 104
 
 # for building & uploading datasets or tokenizer
 idioms:

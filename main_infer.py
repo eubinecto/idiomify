@@ -1,12 +1,15 @@
+"""
+This is for just a simple sanity check on the inference.
+"""
 import argparse
-from idiomify.models import Pipeline
+from idiomify.pipeline import Pipeline
 from idiomify.fetchers import fetch_config, fetch_idiomifier
 from transformers import BartTokenizer
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--src", type=str,
+    parser.add_argument("--sent", type=str,
                         default="If there's any good to loosing my job,"
                                 " it's that I'll now be able to go to school full-time and finish my degree earlier.")
     args = parser.parse_args()
@@ -16,8 +19,8 @@ def main():
     model.eval()  # this is crucial
     tokenizer = BartTokenizer.from_pretrained(config['bart'])
     pipeline = Pipeline(model, tokenizer)
-    src = config['src']
-    tgt = pipeline(src=config['src'])
+    src = config['sent']
+    tgt = pipeline(sents=[config['sent']])
     print(src, "\n->", tgt)
 
 

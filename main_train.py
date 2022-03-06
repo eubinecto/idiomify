@@ -23,7 +23,6 @@ def main():
     config.update(vars(args))
     if not config['upload']:
         print(colored("WARNING: YOU CHOSE NOT TO UPLOAD. NOTHING BUT LOGS WILL BE SAVED TO WANDB", color="red"))
-
     # prepare the model
     bart = BartForConditionalGeneration.from_pretrained(config['bart'])
     tokenizer = BartTokenizer.from_pretrained(config['bart'])
