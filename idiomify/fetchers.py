@@ -4,12 +4,13 @@ from os import path
 import pandas as pd
 from typing import Tuple, List
 from wandb.sdk.wandb_run import Run
-from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic, seq2seq_dir
+from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic, idiomifier_dir
 from idiomify.urls import PIE_URL
 from transformers import AutoModelForSeq2SeqLM, AutoConfig
 from idiomify.models import Idiomifier
 
 
+# --- from the web --- #
 def fetch_pie() -> pd.DataFrame:
     # fetch & parse it directly from the web
     return pd.read_csv(PIE_URL)
@@ -57,11 +58,11 @@ def fetch_idiomifier(ver: str, run: Run = None) -> Idiomifier:
     else:
         artifact = wandb.Api().artifact(f"eubinecto/idiomify/idiomifier:{ver}", type="model")
     config = artifact.metadata
-    artifact_dir = artifact.download(root=seq2seq_dir(ver))
+    artifact_dir = artifact.download(root=idiomifier_dir(ver))
     ckpt_path = path.join(artifact_dir, "model.ckpt")
     bart = AutoModelForSeq2SeqLM.from_config(AutoConfig.from_pretrained(config['bart']))
-    alpha = Idiomifier.load_from_checkpoint(ckpt_path, bart=bart)
-    return alpha
+    model = Idiomifier.load_from_checkpoint(ckpt_path, bart=bart)
+    return model
 
 
 def fetch_config() -> dict:
