@@ -71,4 +71,3 @@ class Idiomifier(pl.LightningModule):  # noqa
         """
         # The authors used Adam, so we might as well use it as well.
         return torch.optim.AdamW(self.parameters(), lr=self.hparams['lr'])
-

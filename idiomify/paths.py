@@ -19,4 +19,3 @@ def idiomifier_dir(ver: str) -> Path:
 
 def tokenizer_dir(ver: str) -> Path:
     return ARTIFACTS_DIR / f"tokenizer_{ver}"
-
