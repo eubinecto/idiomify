@@ -12,10 +12,12 @@ idiomifier:
 
 # for building & uploading datasets or tokenizer
 idioms:
-  ver: d-1-2
-  description: the set of idioms in the traning set of literal2idiomatic_d-1-2.
+  ver: d-1-3
+  description: the set of idioms in the traning set of literal2idiomatic_d-1-3. Definitions of them are added as well.
 literal2idiomatic:
-  ver: d-1-2
-  description: PIE data split into train & test set (80 / 20 split). There is no validation set because I don't intend to do any hyperparameter tuning on this thing.
+  ver: d-1-3
+  description: The idioms are annotated with <idiom> & </idiom>.
   train_ratio: 0.8
   seed: 104
+  boi_token: <idiom>
+  eoi_token: </idiom>

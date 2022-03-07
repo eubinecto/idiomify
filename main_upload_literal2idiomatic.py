@@ -4,7 +4,7 @@ literal2idiomatic ver: d-1-2
 import os
 from idiomify.paths import ROOT_DIR
 from idiomify.fetchers import fetch_pie, fetch_config
-from idiomify.preprocess import upsample, cleanse, stratified_split
+from idiomify.preprocess import upsample, cleanse, stratified_split, annotate
 import wandb
 
 
@@ -15,10 +15,11 @@ def main():
     config = fetch_config()['literal2idiomatic']
     train_df, test_df = pie_df.pipe(cleanse)\
                               .pipe(upsample, seed=config['seed'])\
+                              .pipe(annotate, boi_token=config['boi_token'], eoi_token=config['eoi_token'])\
                               .pipe(stratified_split, ratio=config['train_ratio'], seed=config['seed'])
     # why don't you just "select"  the columns? yeah, stop using csv library. just select them.
-    train_df = train_df[["Idiom", "Literal_Sent", "Idiomatic_Sent"]]
-    test_df = test_df[["Idiom", "Literal_Sent", "Idiomatic_Sent"]]
+    train_df = train_df[["Idiom", "Sense", "Literal_Sent", "Idiomatic_Sent"]]
+    test_df = test_df[["Idiom", "Sense", "Literal_Sent", "Idiomatic_Sent"]]
     dfs = (train_df, test_df)
     with wandb.init(entity="eubinecto", project="idiomify") as run:
         # the paths to write datasets in

@@ -17,7 +17,7 @@ def fetch_pie() -> pd.DataFrame:
 
 
 # --- from wandb --- #
-def fetch_idioms(ver: str, run: Run = None) -> List[str]:
+def fetch_idioms(ver: str, run: Run = None) -> pd.DataFrame:
     """
     why do you need this? -> you need this to have access to the idiom embeddings.
     """
@@ -28,9 +28,8 @@ def fetch_idioms(ver: str, run: Run = None) -> List[str]:
     else:
         artifact = wandb.Api().artifact(f"eubinecto/idiomify/idioms:{ver}", type="dataset")
     artifact_dir = artifact.download(root=idioms_dir(ver))
-    txt_path = path.join(artifact_dir, "all.txt")
-    with open(txt_path, 'r') as fh:
-        return [line.strip() for line in fh]
+    tsv_path = path.join(artifact_dir, "all.tsv")
+    return pd.read_csv(tsv_path, sep="\t")
 
 
 def fetch_literal2idiomatic(ver: str, run: Run = None) -> Tuple[pd.DataFrame, pd.DataFrame]:
