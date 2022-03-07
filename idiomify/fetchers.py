@@ -27,7 +27,7 @@ def fetch_idioms(ver: str, run: Run = None) -> pd.DataFrame:
         artifact = run.use_artifact(f"idioms:{ver}", type="dataset")
     else:
         artifact = wandb.Api().artifact(f"eubinecto/idiomify/idioms:{ver}", type="dataset")
-    artifact_dir = artifact.download(root=idioms_dir(ver))
+    artifact_dir = artifact.download(root=str(idioms_dir(ver)))
     tsv_path = path.join(artifact_dir, "all.tsv")
     return pd.read_csv(tsv_path, sep="\t")
 
@@ -39,7 +39,7 @@ def fetch_literal2idiomatic(ver: str, run: Run = None) -> Tuple[pd.DataFrame, pd
         artifact = run.use_artifact(f"literal2idiomatic:{ver}", type="dataset")
     else:
         artifact = wandb.Api().artifact(f"eubinecto/idiomify/literal2idiomatic:{ver}", type="dataset")
-    artifact_dir = artifact.download(root=literal2idiomatic(ver))
+    artifact_dir = artifact.download(root=str(literal2idiomatic(ver)))
     train_path = path.join(artifact_dir, "train.tsv")
     test_path = path.join(artifact_dir, "test.tsv")
     train_df = pd.read_csv(train_path, sep="\t")
@@ -57,9 +57,10 @@ def fetch_idiomifier(ver: str, run: Run = None) -> Idiomifier:
     else:
         artifact = wandb.Api().artifact(f"eubinecto/idiomify/idiomifier:{ver}", type="model")
     config = artifact.metadata
-    artifact_dir = artifact.download(root=idiomifier_dir(ver))
+    artifact_dir = artifact.download(root=str(idiomifier_dir(ver)))
     ckpt_path = path.join(artifact_dir, "model.ckpt")
     bart = AutoModelForSeq2SeqLM.from_config(AutoConfig.from_pretrained(config['bart']))
+    bart.resize_token_embeddings(config['vocab_size'])
     model = Idiomifier.load_from_checkpoint(ckpt_path, bart=bart)
     return model
 
@@ -69,7 +70,7 @@ def fetch_tokenizer(ver: str, run: Run = None) -> BartTokenizer:
         artifact = run.use_artifact(f"tokenizer:{ver}", type="other")
     else:
         artifact = wandb.Api().artifact(f"eubinecto/idiomify/tokenizer:{ver}", type="other")
-    artifact_dir = artifact.download(root=tokenizer_dir(ver))
+    artifact_dir = artifact.download(root=str(tokenizer_dir(ver)))
     tokenizer = BartTokenizer.from_pretrained(artifact_dir)
     return tokenizer
 

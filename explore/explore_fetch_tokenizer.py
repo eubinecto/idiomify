@@ -12,6 +12,9 @@ def main():
     print(tokenizer.unk_token)
     print(tokenizer.additional_special_tokens)  # this should have been added
 
+    # the size of the vocab
+    print(len(tokenizer))
+
 
 """
 <s>
@@ -22,6 +25,7 @@ def main():
 <pad>
 <unk>
 ['<idiom>', '</idiom>']
+50267
 """
 
 if __name__ == '__main__':

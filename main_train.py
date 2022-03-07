@@ -5,9 +5,9 @@ import argparse
 import pytorch_lightning as pl
 from termcolor import colored
 from pytorch_lightning.loggers import WandbLogger
-from transformers import BartTokenizer, BartForConditionalGeneration
+from transformers import BartForConditionalGeneration
 from idiomify.datamodules import IdiomifyDataModule
-from idiomify.fetchers import fetch_config
+from idiomify.fetchers import fetch_config, fetch_tokenizer
 from idiomify.models import Idiomifier
 from idiomify.paths import ROOT_DIR
 
@@ -23,12 +23,13 @@ def main():
     config.update(vars(args))
     if not config['upload']:
         print(colored("WARNING: YOU CHOSE NOT TO UPLOAD. NOTHING BUT LOGS WILL BE SAVED TO WANDB", color="red"))
-    # prepare the model
+    # prepare a pre-trained BART
     bart = BartForConditionalGeneration.from_pretrained(config['bart'])
-    tokenizer = BartTokenizer.from_pretrained(config['bart'])
-    model = Idiomifier(bart, config['lr'], tokenizer.bos_token_id, tokenizer.pad_token_id)
     # prepare the datamodule
     with wandb.init(entity="eubinecto", project="idiomify", config=config) as run:
+        tokenizer = fetch_tokenizer(config['tokenizer_ver'], run)
+        bart.resize_token_embeddings(len(tokenizer))  # because new tokens are added, this process is necessary
+        model = Idiomifier(bart, config['lr'], tokenizer.bos_token_id, tokenizer.pad_token_id)
         datamodule = IdiomifyDataModule(config, tokenizer, run)
         logger = WandbLogger(log_model=False)
         trainer = pl.Trainer(max_epochs=config['max_epochs'],
@@ -44,6 +45,7 @@ def main():
         if not config['fast_dev_run'] and trainer.current_epoch == config['max_epochs'] - 1:
             ckpt_path = ROOT_DIR / "model.ckpt"
             trainer.save_checkpoint(str(ckpt_path))
+            config['vocab_size'] = len(tokenizer)  # this will be needed to fetch a pretrained idiomifier later
             artifact = wandb.Artifact(name="idiomifier", type="model", metadata=config)
             artifact.add_file(str(ckpt_path))
             run.log_artifact(artifact, aliases=["latest", config['ver']])

@@ -3,25 +3,24 @@ This is for just a simple sanity check on the inference.
 """
 import argparse
 from idiomify.pipeline import Pipeline
-from idiomify.fetchers import fetch_config, fetch_idiomifier
+from idiomify.fetchers import fetch_config, fetch_idiomifier, fetch_tokenizer
 from transformers import BartTokenizer
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--sent", type=str,
-                        default="If there's any good to loosing my job,"
-                                " it's that I'll now be able to go to school full-time and finish my degree earlier.")
+                        default="Just remember that there will always be a hope even when things look hopeless")
     args = parser.parse_args()
     config = fetch_config()['idiomifier']
     config.update(vars(args))
     model = fetch_idiomifier(config['ver'])
+    tokenizer = fetch_tokenizer(config['tokenizer_ver'])
     model.eval()  # this is crucial
-    tokenizer = BartTokenizer.from_pretrained(config['bart'])
     pipeline = Pipeline(model, tokenizer)
     src = config['sent']
-    tgt = pipeline(sents=[config['sent']])
-    print(src, "\n->", tgt)
+    tgts = pipeline(sents=[src])
+    print(src, "\n->", tgts[0])
 
 
 if __name__ == '__main__':

@@ -59,4 +59,3 @@ def stratified_split(df: pd.DataFrame, ratio: float, seed: int) -> Tuple[pd.Data
                                           test_size=other_size, random_state=seed,
                                           shuffle=True)
     return ratio_df, other_df
-
