@@ -60,6 +60,7 @@ def fetch_idiomifier(ver: str, run: Run = None) -> Idiomifier:
     artifact_dir = artifact.download(root=idiomifier_dir(ver))
     ckpt_path = path.join(artifact_dir, "model.ckpt")
     bart = AutoModelForSeq2SeqLM.from_config(AutoConfig.from_pretrained(config['bart']))
+    bart.resize_embeddings(config['vocab_size'])
     model = Idiomifier.load_from_checkpoint(ckpt_path, bart=bart)
     return model
 
