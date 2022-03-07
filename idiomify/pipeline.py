@@ -1,3 +1,4 @@
+import re
 from typing import List
 from transformers import BartTokenizer
 from idiomify.builders import SourcesBuilder
@@ -18,5 +19,9 @@ class Pipeline:
             decoder_start_token_id=self.model.hparams['bos_token_id'],
             max_length=max_length,
         )  # -> (N, L_t)
-        tgts = self.builder.tokenizer.batch_decode(pred_ids, skip_special_tokens=True)
+        tgts = self.builder.tokenizer.batch_decode(pred_ids, skip_special_tokens=False)
+        tgts = [
+            re.sub(r"<s>|</s>", "", tgt)
+            for tgt in tgts
+        ]
         return tgts
