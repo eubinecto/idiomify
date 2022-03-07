@@ -15,8 +15,10 @@ pinned: false
 Grammarly for idioms. A human-inspired Idiomifier based on BART.
 
 
+A demonstration of Idiomify |
+--- |
+<img width="738" alt="image" src="https://user-images.githubusercontent.com/56193069/157136796-e2d4f9cc-28db-4522-af70-d37dc49897c0.png"> |
 
-<img width="764" alt="image" src="https://user-images.githubusercontent.com/56193069/156941205-830b53aa-a3e6-4263-be03-e568124a256e.png">
 
 
 ## Versions
