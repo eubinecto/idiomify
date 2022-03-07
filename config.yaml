@@ -12,8 +12,8 @@ idiomifier:
 
 # for building & uploading datasets or tokenizer
 idioms:
-  ver: d-1-2
-  description: the set of idioms in the traning set of literal2idiomatic_d-1-2.
+  ver: d-1-3
+  description: the set of idioms in the traning set of literal2idiomatic_d-1-3. Definitions of them are added as well.
 literal2idiomatic:
   ver: d-1-3
   description: The idioms are annotated with <idiom> & </idiom>.
