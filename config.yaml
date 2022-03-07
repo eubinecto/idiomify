@@ -1,3 +1,4 @@
+# for training an idiomifier
 idiomifier:
   ver: m-1-2
   desc: just overfitting the model, but on the entire PIE dataset.
@@ -19,5 +20,11 @@ literal2idiomatic:
   description: The idioms are annotated with <idiom> & </idiom>.
   train_ratio: 0.8
   seed: 104
+  boi_token: <idiom>
+  eoi_token: </idiom>
+tokenizer:
+  ver: t-1-1
+  description: A pretrained BartTokenizer. The idiom special tokens are pre-added.
+  bart: facebook/bart-base
   boi_token: <idiom>
   eoi_token: </idiom>
