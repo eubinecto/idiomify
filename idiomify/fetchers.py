@@ -8,6 +8,7 @@ from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic, idiomifie
 from idiomify.urls import PIE_URL
 from transformers import AutoModelForSeq2SeqLM, AutoConfig, BartTokenizer
 from idiomify.models import Idiomifier
+from idiomify.pipeline import Pipeline
 
 
 # --- from the web --- #
@@ -75,6 +76,20 @@ def fetch_tokenizer(ver: str, run: Run = None) -> BartTokenizer:
     return tokenizer
 
 
+def fetch_pipeline() -> Pipeline:
+    """
+    fetch a pipeline of the version stated in config.yaml
+    """
+    config = fetch_config()['idiomifier']
+    model = fetch_idiomifier(config['ver'])
+    tokenizer = fetch_tokenizer(config['tokenizer_ver'])
+    idioms = fetch_idioms(config['idioms_ver'])
+    model.eval()  # this is crucial to obtain consistent results
+    pipeline = Pipeline(model, tokenizer, idioms)
+    return pipeline
+
+
+# --- from local --- #
 def fetch_config() -> dict:
     with open(str(CONFIG_YAML), 'r', encoding="utf-8") as fh:
         return yaml.safe_load(fh)
