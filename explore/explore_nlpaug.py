@@ -1,7 +1,5 @@
 
 import nlpaug.augmenter.word as naw
-import nlpaug.augmenter.sentence as nas
-
 import nltk
 
 
@@ -15,6 +13,13 @@ def main():
     aug = naw.ContextualWordEmbsAug()
     augmented = aug.augment(sent, n=10)
     print(augmented)
+    for var in augmented:
+        # Does the length stay the same?
+        # Oh yes it does!
+        # this is great, as this could be used for augmenting data even for
+        # ner dataset.
+        print(var)
+        print(len(var.split(" ")))
 
 
 if __name__ == '__main__':
