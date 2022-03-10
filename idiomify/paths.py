@@ -9,8 +9,8 @@ def idioms_dir(ver: str) -> Path:
     return ARTIFACTS_DIR / f"idioms_{ver}"
 
 
-def literal2idiomatic(ver: str) -> Path:
-    return ARTIFACTS_DIR / f"literal2idiomatic_{ver}"
+def literal2entities_dir(ver: str) -> Path:
+    return ARTIFACTS_DIR / f"literal2entities_{ver}"
 
 
 def idiomifier_dir(ver: str) -> Path:

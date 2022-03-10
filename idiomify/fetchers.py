@@ -4,7 +4,7 @@ from os import path
 import pandas as pd
 from typing import Tuple
 from wandb.sdk.wandb_run import Run
-from idiomify.paths import CONFIG_YAML, idioms_dir, literal2idiomatic, idiomifier_dir, tokenizer_dir
+from idiomify.paths import CONFIG_YAML, idioms_dir, literal2entities_dir, idiomifier_dir, tokenizer_dir
 from idiomify.urls import PIE_URL
 from transformers import AutoModelForSeq2SeqLM, AutoConfig, BartTokenizer
 from idiomify.models import Idiomifier
@@ -33,14 +33,14 @@ def fetch_idioms(ver: str, run: Run = None) -> pd.DataFrame:
     return pd.read_csv(tsv_path, sep="\t")
 
 
-def fetch_literal2idiomatic(ver: str, run: Run = None) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def fetch_literal2entities(ver: str, run: Run = None) -> Tuple[pd.DataFrame, pd.DataFrame]:
     # if run object is given, we track the lineage of the data.
     # if not, we get the dataset via wandb Api.
     if run:
-        artifact = run.use_artifact(f"literal2idiomatic:{ver}", type="dataset")
+        artifact = run.use_artifact(f"literal2labels:{ver}", type="dataset")
     else:
-        artifact = wandb.Api().artifact(f"eubinecto/idiomify/literal2idiomatic:{ver}", type="dataset")
-    artifact_dir = artifact.download(root=str(literal2idiomatic(ver)))
+        artifact = wandb.Api().artifact(f"eubinecto/idiomify/literal2entities:{ver}", type="dataset")
+    artifact_dir = artifact.download(root=str(literal2entities_dir(ver)))
     train_path = path.join(artifact_dir, "train.tsv")
     test_path = path.join(artifact_dir, "test.tsv")
     train_df = pd.read_csv(train_path, sep="\t")
