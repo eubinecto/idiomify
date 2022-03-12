@@ -12,18 +12,19 @@ idiomifier:
   shuffle: true
   seed: 104
 
+
 # for building & uploading datasets or tokenizer
-idioms:
-  ver: d-1-3
-  description: the set of idioms in the traning set of literal2idiomatic_d-1-3. Definitions of them are added as well.
 literal2entities:
   ver: d-1-4
   description: The dataset for the NER approach to Idiomify.
   train_ratio: 0.8
   seed: 104
-tokenizer:
-  ver: t-1-1
-  description: A pretrained BartTokenizer. The idiom special tokens are pre-added.
-  bart: facebook/bart-base
-  boi_token: <idiom>
-  eoi_token: </idiom>
+idioms:
+  ver: d-1-4
+  description: the set of idioms in the traning set of literal2idiomatic_d-1-4.
+  literal2entities_ver: d-1-4
+entities:
+  ver: d-1-4
+  description: The NER labels from literal2entites:d-1-4.
+  idioms_ver: d-1-4
+
