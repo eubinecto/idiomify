@@ -16,6 +16,3 @@ def literal2entities_dir(ver: str) -> Path:
 def idiomifier_dir(ver: str) -> Path:
     return ARTIFACTS_DIR / f"idiomifier_{ver}"
 
-
-def tokenizer_dir(ver: str) -> Path:
-    return ARTIFACTS_DIR / f"tokenizer_{ver}"

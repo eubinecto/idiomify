@@ -4,7 +4,7 @@ from os import path
 import pandas as pd
 from typing import Tuple
 from wandb.sdk.wandb_run import Run
-from idiomify.paths import CONFIG_YAML, idioms_dir, literal2entities_dir, idiomifier_dir, tokenizer_dir
+from idiomify.paths import CONFIG_YAML, idioms_dir, literal2entities_dir, idiomifier_dir
 from idiomify.urls import PIE_URL
 from transformers import AutoModelForSeq2SeqLM, AutoConfig, BartTokenizer
 from idiomify.models import Idiomifier
@@ -66,23 +66,13 @@ def fetch_idiomifier(ver: str, run: Run = None) -> Idiomifier:
     return model
 
 
-def fetch_tokenizer(ver: str, run: Run = None) -> BartTokenizer:
-    if run:
-        artifact = run.use_artifact(f"tokenizer:{ver}", type="other")
-    else:
-        artifact = wandb.Api().artifact(f"eubinecto/idiomify/tokenizer:{ver}", type="other")
-    artifact_dir = artifact.download(root=str(tokenizer_dir(ver)))
-    tokenizer = BartTokenizer.from_pretrained(artifact_dir)
-    return tokenizer
-
-
 def fetch_pipeline() -> Pipeline:
     """
     fetch a pipeline of the version stated in config.yaml
     """
     config = fetch_config()['idiomifier']
     model = fetch_idiomifier(config['ver'])
-    tokenizer = fetch_tokenizer(config['tokenizer_ver'])
+    tokenizer = ... # just get a pre-trained one.
     idioms = fetch_idioms(config['idioms_ver'])
     model.eval()  # this is crucial to obtain consistent results
     pipeline = Pipeline(model, tokenizer, idioms)
