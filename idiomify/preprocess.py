@@ -20,12 +20,12 @@ def cleanse(df: pd.DataFrame) -> pd.DataFrame:
 def replace_labels(df: pd.DataFrame) -> pd.DataFrame:
     for idx, row in df.iterrows():
         idiom = row['Idiom']
-        row['Literal_Label'] = [
+        row['Literal_Label'] = "|".join([
             f"B/{idiom}" if label == "B" else
             f"I/{idiom}" if label == "I" else
             "O"
             for label in row['Literal_Label'].split(" ")
-        ]
+        ])
     return df
 
 

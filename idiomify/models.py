@@ -5,21 +5,50 @@ from typing import Tuple
 import torch
 from torch.nn import functional as F
 import pytorch_lightning as pl
-from transformers import BartForConditionalGeneration, BartTokenizer
-from idiomify.builders import SourcesBuilder
 from torchmetrics import Accuracy
+from transformers import BertConfig
+from transformers.models.bert.modeling_bert import BertPreTrainedModel, BertModel
+from transformers.modeling_outputs import TokenClassifierOutput
+
+
+class BertForTokenClassification(BertPreTrainedModel):
+    """
+    defining a custom head for a pre-trained BERT
+    """
+    config_class = BertConfig
+
+    def __init__(self, config: BertConfig, *inputs, **kwargs):
+        super().__init__(config, *inputs, **kwargs)
+        self.config = config
+        self.bert = BertModel(config)
+        self.classifier = torch.nn.Linear(config.hidden_size, config.num_labels)
+        # load & init weights
+        self.init_weights()
+
+    def forward(self, input_ids: torch.Tensor, token_type_ids: torch.Tensor, attention_mask: torch.Tensor)\
+            -> TokenClassifierOutput:
+        outputs = self.bert(input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask)
+        hidden_states = ...  # (N, L, H)
+        loss = ...  # (N,)
+        logits = ...  # (N, L, |V|)
+        attentions = ...  # what is  the dimension of this? the multi-head dimensions?
+        return TokenClassifierOutput(loss=loss, logits=logits,
+                                     hidden_states=hidden_states, attentions=attentions)
+
+    # and then what? what should we do further from this?
 
 class Idiomifier(pl.LightningModule):  # noqa
     """
     the baseline is in here.
     """
-    def __init__(self, bart: BartForConditionalGeneration, lr: float, bos_token_id: int, pad_token_id: int):  # noqa
+    def __init__(self, bert: BertModel, lr: float):  # noqa
         super().__init__()
-        self.save_hyperparameters(ignore=["bart"])
-        self.bart = bart
+        self.save_hyperparameters(ignore=["bert"])
+        self.bert = bert
+        self.cls = torch.nn.Linear(..., ...)  # the token-level classifier
         # metrics (using accuracies as of right now)
-        self.acc_train = Accuracy(ignore_index=pad_token_id)
-        self.acc_test = Accuracy(ignore_index=pad_token_id)
+        self.acc_train = Accuracy()
+        self.acc_test = Accuracy()
 
     def forward(self, srcs: torch.Tensor, tgts_r: torch.Tensor) -> torch.Tensor:
         """

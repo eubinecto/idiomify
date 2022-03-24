@@ -4,16 +4,17 @@ builders must accept device as one of the parameters.
 """
 import torch
 from typing import List, Tuple
-from transformers import BartTokenizer
+from transformers import BartTokenizer, BertTokenizer
 
 
 class TensorBuilder:
 
-    def __init__(self, tokenizer: BartTokenizer):
+    def __init__(self, tokenizer: BertTokenizer):
         self.tokenizer = tokenizer
 
     def __call__(self, *args, **kwargs) -> torch.Tensor:
         raise NotImplementedError
+
 
 
 class Idiom2SubwordsBuilder(TensorBuilder):
@@ -45,41 +46,30 @@ class Idiom2SubwordsBuilder(TensorBuilder):
         return input_ids
 
 
-class SourcesBuilder(TensorBuilder):
+class InputsBuilder(TensorBuilder):
     """
     to be used for both training and inference
     """
-    def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> torch.Tensor:
-        encodings = self.tokenizer(text=[literal for literal, _ in literal2idiomatic],
+    def __call__(self, literal2entities: List[Tuple[str, str]]) -> torch.Tensor:
+        # just encode the literal sentences
+        encodings = self.tokenizer(text=[literal for literal, _ in literal2entities],
                                    return_tensors="pt",
                                    padding=True,
                                    truncation=True,
                                    add_special_tokens=True)
         srcs = torch.stack([encodings['input_ids'],
-                            encodings['attention_mask']], dim=1)   # (N, 2, L)
-        return srcs  # (N, 2, L)
+                            encodings['token_type_ids'],
+                            encodings['attention_mask']], dim=1)   # (N, 3, L)
+        return srcs  # (N, 3, L)
 
 
-class TargetsRightShiftedBuilder(TensorBuilder):
-    """
-    This is to be used only for training. As for inference, we don't need this.
-    """
-    def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> torch.Tensor:
-        encodings = self.tokenizer([
-            self.tokenizer.bos_token + idiomatic  # starts with bos, but does not end with eos (right-shifted)
-            for _, idiomatic in literal2idiomatic
-        ], return_tensors="pt", add_special_tokens=False, padding=True, truncation=True)
-        tgts_r = torch.stack([encodings['input_ids'],
-                              encodings['attention_mask']], dim=1)  # (N, 2, L)
-        return tgts_r
+class LabelsBuilder:
 
-
-class TargetsBuilder(TensorBuilder):
-
-    def __call__(self, literal2idiomatic: List[Tuple[str, str]]) -> torch.Tensor:
-        encodings = self.tokenizer([
-            idiomatic + self.tokenizer.eos_token  # no bos, but ends with eos
-            for _, idiomatic in literal2idiomatic
-        ], return_tensors="pt", add_special_tokens=False, padding=True, truncation=True)
-        tgts = encodings['input_ids']
-        return tgts  # (N, L)
+    def __call__(self, literal2entities: List[Tuple[str, str]], labels: List[str]) -> torch.Tensor:
+        # Surely, the length won't stay the same. You should keep them in sync.
+        # How do I pad it? -> wait, but this is what you should do in the preprocessing phase.
+        labels = torch.IntTensor([
+            [labels.index(entity) for entity in entities.split("|")]
+            for _, entities in literal2entities
+        ])
+        return labels  # (N, L)

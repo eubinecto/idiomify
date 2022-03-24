@@ -8,6 +8,7 @@ def main():
     print(test_df.size)  # 3102 rows
     # some entries
     print(train_df.head())
+    print(train_df.columns)
 
 
 if __name__ == '__main__':

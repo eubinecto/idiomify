@@ -2,7 +2,7 @@ import re
 import pandas as pd
 from typing import List
 from transformers import BartTokenizer
-from idiomify.builders import SourcesBuilder
+from idiomify.builders import InputsBuilder
 from idiomify.models import Idiomifier
 
 
@@ -10,7 +10,7 @@ class Pipeline:
 
     def __init__(self, model: Idiomifier, tokenizer: BartTokenizer, idioms: pd.DataFrame):
         self.model = model
-        self.builder = SourcesBuilder(tokenizer)
+        self.builder = InputsBuilder(tokenizer)
         self.idioms = idioms
 
     def __call__(self, sents: List[str], max_length=100) -> List[str]:
