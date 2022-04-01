@@ -8,7 +8,7 @@ app_file: main_deploy.py
 pinned: false
 ---
 
-# Exploring the efficacy of Idiomify feedback: how a meaning-aware feedback system could help Korean EFL writers in acquiring English idioms
+# Exploring the efficacy of Idiomify feedback: how an automatic literal-to-idiomatic paraphraser could facilitate Korean EFL writers in acquiring English idiom
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://huggingface.co/spaces/eubinecto/idiomify)
 
 
