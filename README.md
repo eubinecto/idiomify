@@ -11,6 +11,7 @@ pinned: false
 # Exploring the efficacy of *Idiomify* feedback: how an automatic literal-to-idiomatic paraphraser could help Korean EFL writers in acquiring English idioms
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://huggingface.co/spaces/eubinecto/idiomify)
 
+## The rationale and the research questions
 
 A demonstration of Idiomify |
 --- |
@@ -26,5 +27,6 @@ Of course, students can learn only so much about idioms with Idiomify feedback a
 > RQ2: Considering the answer(s) to RQ1, what additional inputs or instructions should be administered to the students to compensate Idiomify feedback for its limits?
 
 
+## The methods 
 
-
+🚧 To be filled 🚧
