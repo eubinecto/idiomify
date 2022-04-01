@@ -8,7 +8,7 @@ app_file: main_deploy.py
 pinned: false
 ---
 
-# Exploring the efficacy of Idiomify feedback: how an automatic literal-to-idiomatic paraphraser could help Korean EFL writers in acquiring English idioms
+# Exploring the efficacy of *Idiomify* feedback: how an automatic literal-to-idiomatic paraphraser could help Korean EFL writers in acquiring English idioms
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://huggingface.co/spaces/eubinecto/idiomify)
 
 
@@ -17,7 +17,7 @@ A demonstration of Idiomify |
 <img width="738" alt="image" src="https://user-images.githubusercontent.com/56193069/157136796-e2d4f9cc-28db-4522-af70-d37dc49897c0.png"> |
 
 
-Administering feedback on student’s writing does not always have students learn something. For example, we know from the literature that correcting students’ grammar mistakes hardly ever have them learn the rules of grammar (Truscott, 1996; Conti, 2015). This implies that an automated feedback system for correcting grammars, such as Grammarly, may not necessarily have students improve their grammar as they self-revise grammatical mistakes. However, not all automated feedback systems are solely designed to correct rules. With the help of natural language processing, some of them can intelligently paraphrase sentences to communicate the intended meaning potentially better than before (e.g. Wordtune & Quillbot). Idiomify, which is developed by the author, is one of those paraphrasing feedback systems. It automatically turns literal phrases into idiomatic phrases wherever appropriate. While corrective feedback aims to correct errors, Idiomify feedback aims to communicate meaning in a figurative way. Motivated by the clear difference in their aims, it is hypothesized that their learning benefits may as well differ. Unlike corrective feedback, Idiomify feedback could help students learn something about idioms, as it gives feedback on communicating meaning, not on sticking to a set of rules. This begs the first research question:
+Administering feedback on student’s writing does not always have students learn something. For example, we know from the literature that correcting students’ grammar mistakes hardly ever have them learn the rules of grammar (Truscott, 1996; Conti, 2015). This implies that an automated feedback system for correcting grammars, such as Grammarly, may not necessarily have students improve their grammar as they self-revise grammatical mistakes. However, not all automated feedback systems are solely designed to correct rules. With the help of natural language processing, some of them can intelligently paraphrase sentences to communicate their intended meaning potentially better than before (e.g. Wordtune & Quillbot). Idiomify, which is developed by the author, is one of those paraphrasing feedback systems. It automatically turns literal phrases into idiomatic phrases wherever appropriate. While corrective feedback aims to correct errors, Idiomify feedback aims to communicate meaning in a figurative way. Motivated by the clear difference in their aims, it is hypothesized that their learning benefits may as well differ. Unlike corrective feedback, Idiomify feedback could help students learn something about idioms, as it gives feedback on communicating meaning, not on sticking to a set of rules. This begs the first research question:
 
 > RQ1: To what extent can Idiomify feedback help Korean EFL writers in acquiring English idioms?
 
