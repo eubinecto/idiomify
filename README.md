@@ -1,7 +1,5 @@
 
 # Exploring the efficacy of *Idiomify* feedback: how an automatic literal-to-idiomatic paraphraser could help Korean EFL writers in acquiring English idioms
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://huggingface.co/spaces/eubinecto/idiomify)
-
 
 some examples of idiomify |
 --- | 
