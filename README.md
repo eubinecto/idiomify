@@ -23,7 +23,7 @@ Of course, students can learn only so much about idioms with Idiomify feedback a
 
 ## The methods 
 
-1.	To answer RQ1, we will have students to do the following during the first session:
+1.	To answer RQ1, we will have students do the following during the first session:
   - (a) They will be informed with the first idiom and be told that they should aim to acquire it
   -	(b) They will be asked to be tested on their prior knowledge of the first idiom (pre-test). 
   -	(c) after a short break, they will be administered with Idiomify feedback on their pre-written personal statements. The use of the first idiom in the context of a paragraph in their personal statements will be highlighted with no further information. 
