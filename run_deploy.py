@@ -12,7 +12,7 @@ def main():
     st.title("Idiomify with GPT-3 demo")
     p = st.text_area("Type a paragraph here", value=EXAMPLE)
     temp = float(st.slider(label="Creativity", min_value=0.0, max_value=1.0,
-                     value=0.9))
+                     value=0.6))
     max_tokens = st.select_slider("Maximum tokens", options=[100, 200, 300], value=300)
 
     if st.button(label="Idiomify"):
