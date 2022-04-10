@@ -29,7 +29,7 @@ Of course, students can learn only so much about idioms with Idiomify feedback a
   -	(c) after a short break, they will be administered with Idiomify feedback on their pre-written personal statements. The use of the first idiom in the context of a paragraph in their personal statements will be highlighted with no further information. 
   - (d)	After a short break, they will be asked to take the same test they took in step 1-b (post-test).
   - (e)	After a short break, they will be asked to complete a digital questionnaire (Microsoft Forms). 
-2.	To answer RQ2, we will have the same students to subsequently do the following during the second session:
+2.	To answer RQ2, we will have the same students subsequently do the following during the second session:
   - (a) They will first be split into four groups of five – group A, B, C and D.
   - (b)	Group A will be informed with the second idiom that they should learn
   - (c)	Group A will be asked to take the same pre-test they took in the first session (1-b), which will now test their knowledge of the second idiom
