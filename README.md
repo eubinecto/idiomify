@@ -1,7 +1,7 @@
 
 # Exploring the efficacy of *Idiomify* feedback: how an automatic literal-to-idiomatic paraphraser could help Korean EFL writers in acquiring English idioms
 
-some examples of idiomify |
+some examples of idiomify with GPT-3 |
 --- | 
 <img src='https://user-images.githubusercontent.com/56193069/162628064-16ad8385-fc2f-4fa5-bde9-d7acd506e53f.png' width='800'> | 
 <img src='https://user-images.githubusercontent.com/56193069/162627955-a160ae59-b234-4f9c-a1a0-21a6f7f09bc1.png' width='800'> | 
