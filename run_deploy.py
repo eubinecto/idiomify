@@ -3,34 +3,26 @@ we deploy the pipeline via streamlit.
 """
 import re
 import streamlit as st
-from idiomify.fetchers import fetch_pipeline
-from idiomify.pipeline import Pipeline
-
-
-@st.cache(allow_output_mutation=True)
-def cache_pipeline() -> Pipeline:
-    return fetch_pipeline()
+from idiomifier import Idiomifier, EXAMPLE
 
 
 def main():
     # fetch a pre-trained model
-    pipeline = cache_pipeline()
-    st.title("Idiomify Demo")
-    text = st.text_area("Type sentences here",
-                        value="Just remember that there will always be a hope even when things look hopeless")
-    with st.sidebar:
-        st.subheader("Supported idioms")
-        idioms = [row["Idiom"] for _, row in pipeline.idioms.iterrows()]
-        st.write(" / ".join(idioms))
+    idiomifer = Idiomifier()
+    st.title("Idiomify with GPT-3 demo")
+    p = st.text_area("Type a paragraph here", value=EXAMPLE)
+    temp = float(st.slider(label="Creativity", min_value=0.0, max_value=1.0,
+                     value=0.9))
+    max_tokens = st.select_slider("Maximum tokens", options=[100, 200, 300], value=300)
 
     if st.button(label="Idiomify"):
+        if len(p.split(" ")) >= max_tokens:
+            st.error(f"You can't use more than {max_tokens} tokens.")
         with st.spinner("Please wait..."):
-            sents = [sent for sent in text.split(".") if sent]
-            preds = pipeline(sents, max_length=200)
             # highlight the rule & honorifics that were applied
-            preds = [re.sub(r"<idiom>|</idiom>", "`", pred)
-                     for pred in preds]
-            st.markdown(". ".join(preds))
+            pred = idiomifer("text-davinci-002", p, temp, max_tokens)
+            pred = re.sub(r"<idiom>|</idiom>", "`", pred)
+            st.markdown(pred)
 
 
 if __name__ == '__main__':
