@@ -23,4 +23,17 @@ Of course, students can learn only so much about idioms with Idiomify feedback a
 
 ## The methods 
 
-🚧 To be filled 🚧
+1.	To answer RQ1, we will have students to do the following during the first session:
+  - (a) They will be informed with the first idiom and be told that they should aim to acquire it
+  -	(b) They will be asked to be tested on their prior knowledge of the first idiom (pre-test). 
+  -	(c) after a short break, they will be administered with Idiomify feedback on their pre-written personal statements. The use of the first idiom in the context of a paragraph in their personal statements will be highlighted with no further information. 
+  - (d)	After a short break, they will be asked to take the same test they took in step 1-b (post-test).
+  - (e)	After a short break, they will be asked to complete a digital questionnaire (Microsoft Forms). 
+2.	To answer RQ2, we will have the same students to subsequently do the following during the second session:
+  - (a) They will first be split into four groups of five – group A, B, C and D.
+  - (b)	Group A will be informed with the second idiom that they should learn
+  - (c)	Group A will be asked to take the same pre-test they took in the first session (1-b), which will now test their knowledge of the second idiom
+  - (d)	After a short break, Group A will be administered with Idiomify feedback on the second idiom. They will also be informed with further information about the second idiom, e.g. their audio-visual contexts from YouTube clips, their collocations, their etymology, etc. The student researcher will deliver   a dedicated class for this to group A. The class will be video recorded.
+  - (e)	After a short break, Group A will be asked to take the same test they took in step 2-c. (post-test) 
+  - (f)	After a short break, Group A will be asked to complete a digital questionnaire. 
+  - (g)	Group B, C and D will be asked to do from 2-b to 2-f on the following days
