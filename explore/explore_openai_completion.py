@@ -12,9 +12,9 @@ def main():
     openai.api_key = os.getenv("OPENAI_API_KEY")
     api = openai.Completion("text-ada-001")
     response: OpenAIObject = api.create(engine="text-davinci-002",
-                          prompt="Say this is a test",
-                          temperature=0,
-                          max_tokens=6)
+                                        prompt="Say this is a test",
+                                        temperature=0,
+                                        max_tokens=6)
     print(type(response))
     print(response.to_dict_recursive()['choices'][0]['text'])
 
