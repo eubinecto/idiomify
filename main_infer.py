@@ -4,7 +4,7 @@ This is for just a simple sanity check on the inference.
 import argparse
 import textwrap
 import openai
-from idiomifier import Idiomifier, EXAMPLE
+from idiomifier import Idiomifier
 import streamlit
 
 openai.api_key = streamlit.secrets['OPENAI_API_KEY']
@@ -12,7 +12,7 @@ openai.api_key = streamlit.secrets['OPENAI_API_KEY']
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--p", type=str, default=EXAMPLE)
+    parser.add_argument("--p", type=str, default="I love you more than anything else.")
     parser.add_argument("--temp", type=float, default=0.9)
     parser.add_argument("--max_tokens", type=str, default=339)
     args = parser.parse_args()
