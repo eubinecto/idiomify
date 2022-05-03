@@ -13,9 +13,9 @@ class Idiomifier:
     def __call__(self, p: str, temp: float, max_tokens: int) -> str:
         # check if the request is out of limits
         prompt = f"{p}->"
-        response = self.api.create(engine=streamlit.secrets['ENGINE'],
+        response = self.api.create(model=streamlit.secrets['ENGINE'],
                                    prompt=prompt,
                                    temperature=temp,
                                    max_tokens=max_tokens,
-                                   end="\n")
+                                   stop="\n")
         return response.to_dict_recursive()['choices'][0]['text']
