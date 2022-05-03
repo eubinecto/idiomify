@@ -8,13 +8,12 @@ from idiomifier import Idiomifier, EXAMPLE
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--engine", type=str, default="text-davinci-002")
     parser.add_argument("--p", type=str, default=EXAMPLE)
     parser.add_argument("--temp", type=float, default=0.9)
     parser.add_argument("--max_tokens", type=str, default=339)
     args = parser.parse_args()
     idiomifier = Idiomifier()
-    res = idiomifier(args.engine, args.p, args.temp, args.max_tokens)
+    res = idiomifier(args.p, args.temp, args.max_tokens)
     print("\n".join(textwrap.wrap(args.p, width=90)))
     print("\n".join(textwrap.wrap(res, width=90)))
 

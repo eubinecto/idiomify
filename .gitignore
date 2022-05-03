@@ -132,3 +132,5 @@ artifacts
 wandb
 .idea
 
+data
+.streamlit
