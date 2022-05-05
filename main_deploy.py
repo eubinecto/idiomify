@@ -31,12 +31,9 @@ def main():
 
     if st.button(label="Idiomify"):
         with st.spinner("Please wait..."):
-            sents = [sent for sent in text.split(".") if sent]
-            preds = pipeline(sents, max_length=200)
-            # highlight the rule & honorifics that were applied
-            preds = [re.sub(r"<idiom>|</idiom>", "`", pred)
-                     for pred in preds]
-            st.markdown(". ".join(preds))
+            preds = pipeline(text, max_length=300)
+            preds = re.sub(r"<idiom>|</idiom>", "`", preds)
+            st.markdown(preds)
 
 
 if __name__ == '__main__':

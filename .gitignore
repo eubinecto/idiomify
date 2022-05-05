@@ -131,4 +131,6 @@ dmypy.json
 artifacts
 wandb
 .idea
+.streamlit
+data
 

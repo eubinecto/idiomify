@@ -4,12 +4,11 @@ This is for just a simple sanity check on the inference.
 import argparse
 from idiomify.pipeline import Pipeline
 from idiomify.fetchers import fetch_config, fetch_idiomifier, fetch_tokenizer
-from transformers import BartTokenizer
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sent", type=str,
+    parser.add_argument("--sents", type=str,
                         default="Just remember that there will always be a hope even when things look hopeless")
     args = parser.parse_args()
     config = fetch_config()['idiomifier']
@@ -18,9 +17,8 @@ def main():
     tokenizer = fetch_tokenizer(config['tokenizer_ver'])
     model.eval()  # this is crucial
     pipeline = Pipeline(model, tokenizer)
-    src = config['sent']
-    tgts = pipeline(sents=[src])
-    print(src, "\n->", tgts[0])
+    tgts = pipeline(sents=config['sents'])
+    print(config['sents'], "\n->", tgts)
 
 
 if __name__ == '__main__':

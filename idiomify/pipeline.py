@@ -11,17 +11,15 @@ class Pipeline:
         self.model = model
         self.builder = SourcesBuilder(tokenizer)
 
-    def __call__(self, sents: List[str], max_length=100) -> List[str]:
-        srcs = self.builder(literal2idiomatic=[(sent, "") for sent in sents])
+    def __call__(self, sents: str, max_length=300) -> str:
+        # yeah... I just want to see what happens here?
+        srcs = self.builder(literal2idiomatic=[(sents, "")])
         pred_ids = self.model.bart.generate(
             inputs=srcs[:, 0],  # (N, 2, L) -> (N, L)
             attention_mask=srcs[:, 1],  # (N, 2, L) -> (N, L)
             decoder_start_token_id=self.model.hparams['bos_token_id'],
             max_length=max_length,
-        )  # -> (N, L_t)
-        tgts = self.builder.tokenizer.batch_decode(pred_ids, skip_special_tokens=False)
-        tgts = [
-            re.sub(r"<s>|</s>", "", tgt)
-            for tgt in tgts
-        ]
+        ).squeeze()  # -> (N, L_t) -> (L_t)
+        tgts = self.builder.tokenizer.decode(pred_ids, skip_special_tokens=False)
+        tgts = re.sub(r"<s>|</s>", "", tgts)
         return tgts
