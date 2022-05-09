@@ -32,22 +32,3 @@ To address the aim above, we ask the following research questions:
 5.	Do the answers to the above questions differ according to the L2 proficiency levels of the students?
 6.	Do the answers to the above questions differ according to the transparency of the idioms?
  
-
-## The methods 
-
-### Participants
-The study will be conducted in IEN-NCUK institute, based in Seoul, South Korea, where students are taught EAP (English for Academic Purposes) classes. Up to 30 EFL writers enrolled in EAP classes will be recruited to participate in the current study. Most of them will be in the 18-20 year old age bracket and nobody will be under 18. Along with students, up to three teachers will be asked to participate in the study as evaluators of students’ writing outcomes.  Participants will receive a small gift as a token of gratitude for their participation. 
-
-### Treatments
-All 30 particpants will be asked to perform a writing task taking around 30 minutes. They will be asked to do so on their personal laptops and to record their screen with Microsoft Teams. Their first drafts will be saved. After they finish their first drafts, they will be administered with Idiomify feedback via a website developed by the student researcher. They will then be asked to revise their first drafts based on the feedback given and they will be allowed to use any other external online resources that they might usually access (e.g. online dictionary).  They can spend as long as they like on this and the time taken will be recorded.  
-
-### Instruments
-On performing the “writing task”, students will be asked to write a short, non-academic text (e.g. a short journal of how their days have gone so far). On receiving “Idiomify feedback”, they will be asked to copy & paste their text into the Idiomify web application and click “Idiomify” button. They will be given suggestions on any idioms that students could use to rephrase parts of their text. Students could either accept or reject these suggestions, or try “Idiomify” again to get a different suggestions. On using “external resources”, students may choose to look up the definitions, the etymologies, the example context of the suggested idioms or any other information that they may want to search for.
-
-### Procedures
-1.	On day one, the participants will be asked to perform the writing task, revise their first and second drafts after receiving Idiomify feedback and any information from external sources they choose to use. Immediately after they are done with their final drafts, the immediate post-test will be completed (formulating the definitions of idioms that they ended up using in their final drafts).
-2.	One week days later, the participants will be asked to complete a further task (a delayed post-test), which they will be informed about but will not know the focus. The delayed test will be the same as the immediate post-test they took in step (1).
-3.	The day after the delayed post-test, some of the best-performing and worst-performing students will be asked to participate in an interview. They will be asked to perform a simulated recall while watching the recordings of their screen together with the student researcher.
-4.	The day after the delayed post-test, the participating teachers will be asked to evaluate the nativeness / naturalness of student’s usage of suggested idioms in their final drafts.
-5.	The results of the immediate & delayed post-test for all participants will be returned a week after step 4 above.
-
