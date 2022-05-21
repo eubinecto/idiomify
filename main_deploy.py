@@ -2,8 +2,26 @@
 we deploy the pipeline via streamlit.
 """
 import re
+import openai
+import requests
 import streamlit as st
+from requests import HTTPError
 from idiomifier import Idiomifier
+
+
+def check(key: str) -> bool:
+    url = "https://api.openai.com/v1/engines"
+    headers = {
+        'Authorization': f"Bearer {key}"
+    }
+    r = requests.get(url=url, headers=headers)
+
+    try:
+        r.raise_for_status()
+    except HTTPError as e:
+        return False
+    else:
+        return True
 
 
 def check_password() -> bool:
@@ -11,24 +29,32 @@ def check_password() -> bool:
     excerpted from: https://docs.streamlit.io/knowledge-base/deploy/authentication-without-sso
     Returns `True` if the user had the correct password.
     """
+
     def password_entered():
         """Checks whether a password entered by the user is correct."""
         if st.session_state["PASSWORD"] == st.secrets["PASSWORD"]:
             st.session_state["PASSWORD_CORRECT"] = True
-            del st.session_state["PASSWORD"]  # don't store password
+            del st.session_state["PASSWORD"]  # don't store your password
+        elif check(st.session_state["PASSWORD"]):
+            # not the master key, but a valid one
+            openai.api_key = st.session_state["PASSWORD"]
+            st.session_state["PASSWORD_CORRECT"] = True
+            del st.session_state["PASSWORD"]  # don't store your password
         else:
             st.session_state["PASSWORD_CORRECT"] = False
 
+    msg = "Type your OPENAI_API_KEY here. " \
+          "The key is not permanently stored."
     if "PASSWORD_CORRECT" not in st.session_state:
         # First run, show input for password.
         st.text_input(
-            "Password", type="password", on_change=password_entered, key="PASSWORD"
+            msg, type="password", on_change=password_entered, key="PASSWORD"
         )
         return False
     elif not st.session_state["PASSWORD_CORRECT"]:
         # Password not correct, show input + error.
         st.text_input(
-            "Password", type="password", on_change=password_entered, key="PASSWORD"
+            msg, type="password", on_change=password_entered, key="PASSWORD"
         )
         st.error("😕 Invalid api key")
         return False
