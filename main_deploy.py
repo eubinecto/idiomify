@@ -36,8 +36,7 @@ def check_password() -> bool:
             st.session_state["PASSWORD_CORRECT"] = True
             del st.session_state["PASSWORD"]  # don't store your password
         elif check(st.session_state["PASSWORD"]):
-            # not the master key, but a valid one
-            openai.api_key = st.session_state["PASSWORD"]
+            openai.api_key = st.session_state["PASSWORD"]  # update the key with this new one
             st.session_state["PASSWORD_CORRECT"] = True
             del st.session_state["PASSWORD"]  # don't store your password
         else:
