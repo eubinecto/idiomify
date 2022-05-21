@@ -9,7 +9,6 @@ from openai.openai_object import OpenAIObject
 
 def main():
     # Load your API key from an environment variable or secret management service
-    openai.api_key = os.getenv("OPENAI_API_KEY")
     api = openai.Completion("text-ada-001")
     response: OpenAIObject = api.create(engine="text-davinci-002",
                           prompt="Say this is a test",

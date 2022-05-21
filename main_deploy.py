@@ -30,7 +30,7 @@ def check_password() -> bool:
         st.text_input(
             "Password", type="password", on_change=password_entered, key="PASSWORD"
         )
-        st.error("😕 Password incorrect")
+        st.error("😕 Invalid api key")
         return False
     else:
         # Password correct.
