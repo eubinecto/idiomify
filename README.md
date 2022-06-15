@@ -1,5 +1,5 @@
 
-# Exploring the efficacy of *Idiomify* feedback: can an automatic literal-to-idiomatic paraphraser could help Korean EFL writers in acquiring English idioms?
+# Exploring the efficacy of *Idiomify* feedback: can GPT-3 help Korean EFL writers learn idioms?
 
 [![m-1-3](https://img.shields.io/badge/demo-m--1--3-brightgreen)](https://huggingface.co/spaces/eubinecto/idiomify)
 [![v3.0.2](https://img.shields.io/badge/demo-v3.0.2-brightgreen)](https://share.streamlit.io/eubinecto/idiomify/main/main_deploy.py)
