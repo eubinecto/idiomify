@@ -18,7 +18,7 @@ some examples of idiomify with GPT-3 |
 We aimed to answer the overarching question: How effective is *Idiomify in helping EFL writers learn idioms?* To answer this, we explored the efficacy of Idiomify in terms of five factors: 
 
 1.	**Appropriateness**. How appropriate are Idiomify’s suggestions?
-2.	**Learning idioms**. Do learners learn the meaning of the idioms that Idiomify suggests? 
+2.	**Learning idioms**. Do learners learn the meaning of idioms as they revise their drafts with Idiomify? 
 3.	**Learners’ perceptions**. What about Idiomify do learners find helpful or unhelpful?
 4.	**Learners’ behaviour**. Do the answers to 1 and 2 differ in how learners interact with Idiomify? 
 5.	**Transparency of idioms**. Do the answers to 1 and 2 differ in how transparent learners find the idioms that Idiomify suggests?
