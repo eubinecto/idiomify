@@ -15,7 +15,7 @@ some examples of idiomify with GPT-3 |
 
 # Research Questions
 
-We aimed to answer the overarching question: How effective is Idiomify in helping EFL writers learn idioms? To answer this, we explored the efficacy of Idiomify in terms of five factors: 
+We aimed to answer the overarching question: How effective is *Idiomify in helping EFL writers learn idioms?* To answer this, we explored the efficacy of Idiomify in terms of five factors: 
 
 1.	Appropriateness. How appropriate are Idiomify’s suggestions?
 2.	Learning idioms. Do learners learn the meaning of the idioms that Idiomify suggests? 
