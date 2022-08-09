@@ -1,5 +1,5 @@
 
-# Exploring the efficacy of *Idiomify*: can AI (GPT-3) help EFL writers learn idioms?
+# Exploring the Efficacy of Idiomify: How Effective is GPT-3 for Teaching Idioms to EFL Writers?
 
 [![m-1-3](https://img.shields.io/badge/demo-m--1--3-brightgreen)](https://huggingface.co/spaces/eubinecto/idiomify)
 [![v3.0.2](https://img.shields.io/badge/demo-v3.0.2-brightgreen)](https://share.streamlit.io/eubinecto/idiomify/main/main_deploy.py)
